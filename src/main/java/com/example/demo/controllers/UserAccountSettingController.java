@@ -22,7 +22,15 @@ public class UserAccountSettingController {
     @GetMapping("/{username}")
     public BaseResponse findUserAccountSettingByUsername(@PathVariable(name = "username") String username) {
         UserAccountSetting userAccountSetting = userAccountSettingService.findUserAccountSettingByUsername(username);
-        return userAccountSetting != null ? new ResponseObject(HttpStatus.OK.value(), userAccountSettingService.findUserAccountSettingByUsername(username))
-                : new ResponseMessage(HttpStatus.OK.value(), "not found ");
+        return userAccountSetting != null ? new ResponseObject(HttpStatus.OK.value(), userAccountSetting)
+                : new ResponseMessage(HttpStatus.ACCEPTED.value(), "not found ");
     }
+
+    @GetMapping("/get")
+    public BaseResponse findUserAccountSettingByJwt(){
+        UserAccountSetting userAccountSetting = userAccountSettingService.findUserAccountSettingByJwt();
+        return userAccountSetting != null ? new ResponseObject(HttpStatus.OK.value(),userAccountSetting)
+                : new ResponseMessage(HttpStatus.ACCEPTED.value(),"not found ");
+    }
+
 }
