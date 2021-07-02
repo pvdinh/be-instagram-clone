@@ -1,7 +1,8 @@
 package com.example.demo.utils;
 
-import com.example.demo.response.ResponseLogin;
+import com.example.demo.response.JwtResponse;
 import com.example.demo.response.ResponseMessage;
+import com.example.demo.response.ResponseObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -29,7 +30,7 @@ public class TokenAuthentication {
                 .compact();
         addHeader(response);
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + jwt);
-        response.getWriter().write(new ObjectMapper().writeValueAsString(new ResponseLogin(HttpStatus.OK.value(),jwt)));
+        response.getWriter().write(new ObjectMapper().writeValueAsString(new ResponseObject(HttpStatus.OK.value(),new JwtResponse(jwt))));
         response.getWriter().flush();
     }
 

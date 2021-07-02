@@ -26,4 +26,8 @@ public class UserAccountService implements UserDetailsService {
                     .build();
         }else throw new NullPointerException("NOT FOUND : " + s);
     }
+
+    public UserAccount findUserAccountByUsernameOrEmailOrPhoneNumber(String s){
+        return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumber(s,s,s);
+    }
 }
