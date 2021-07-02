@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.models.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
+import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,5 +30,8 @@ public class UserAccountService implements UserDetailsService {
 
     public UserAccount findUserAccountByUsernameOrEmailOrPhoneNumber(String s){
         return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumber(s,s,s);
+    }
+    public String getUID(){
+        return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumber(UsernameFromJWT.get(),UsernameFromJWT.get(),UsernameFromJWT.get()).getId();
     }
 }
