@@ -5,4 +5,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserAccountSettingRepository extends MongoRepository<UserAccountSetting,String> {
     UserAccountSetting findUserAccountSettingByUsername(String username);
+    UserAccountSetting findUserAccountSettingById(String id);
 }
