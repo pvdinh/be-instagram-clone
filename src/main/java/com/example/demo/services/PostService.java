@@ -5,10 +5,8 @@ import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
-import com.example.demo.utils.SortPostCustom;
-import org.springframework.beans.factory.FactoryBean;
+import com.example.demo.utils.SortClassCustom;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -63,7 +61,7 @@ public class PostService {
                 postInformations.add(new PostInformation(post,userAccountSetting));
             });
         });
-        postInformations.sort(new SortPostCustom.ByDateCreate());
+        postInformations.sort(new SortClassCustom.PostByDateCreate());
         return postInformations;
     }
 
