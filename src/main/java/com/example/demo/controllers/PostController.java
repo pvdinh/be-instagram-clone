@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
 import com.example.demo.response.ResponseMessage;
+import com.example.demo.response.ResponseObject;
 import com.example.demo.services.PostService;
 import com.example.demo.services.UserAccountService;
 import com.example.demo.utils.UsernameFromJWT;
@@ -43,5 +44,13 @@ public class PostController {
     @PostMapping("/{postId}/unlike")
     public BaseResponse unLike(@PathVariable(name = "postId") String postId){
         return new ResponseMessage(HttpStatus.OK.value(),postService.unLike(userAccountService.getUID(),postId));
+    }
+    @GetMapping("/{postId}/get")
+    public BaseResponse getPostInformationOfUser(@PathVariable(name = "postId") String postId){
+        return new ResponseObject(HttpStatus.OK.value(),postService.getPostInformationOfUser(postId));
+    }
+    @GetMapping("/following")
+    public BaseResponse getAllPostFollowingUser(){
+        return new ResponseObject(HttpStatus.OK.value(),postService.getAllPostInformationFollowing());
     }
 }

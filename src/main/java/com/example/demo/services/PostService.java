@@ -1,14 +1,12 @@
 package com.example.demo.services;
 
-import com.example.demo.models.Like;
-import com.example.demo.models.Post;
-import com.example.demo.models.UserAccount;
+import com.example.demo.models.*;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserAccountRepository;
-import org.springframework.beans.factory.FactoryBean;
+import com.example.demo.repository.UserAccountSettingRepository;
+import com.example.demo.utils.SortClassCustom;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +20,10 @@ public class PostService {
     private LikeRepository likeRepository;
     @Autowired
     private UserAccountRepository userAccountRepository;
+    @Autowired
+    private UserAccountSettingRepository userAccountSettingRepository;
+    @Autowired
+    private LikeService likeService;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -40,6 +42,29 @@ public class PostService {
             posts.addAll(postRepository.findPostByUserId(s));
         });
         return posts;
+    }
+
+    public PostInformation getPostInformationOfUser(String pId){
+        Post post=postRepository.findPostById(pId);
+        if(post != null){
+            UserAccountSetting userAccountSetting=userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
+            return new PostInformation(post,userAccountSetting,likeService.getListUserLikedPost(post.getId()));
+        }else {
+            return new PostInformation(null,null,null);
+        }
+    }
+
+        public List<PostInformation> getAllPostInformationFollowing(){
+        List<PostInformation> postInformations = new ArrayList<>();
+        List<UserAccountSetting> userAccountSettings = userAccountSettingRepository.findAll();
+        userAccountSettings.forEach(userAccountSetting -> {
+            List<Post> posts = postRepository.findPostByUserId(userAccountSetting.getId());
+            posts.forEach(post -> {
+                postInformations.add(new PostInformation(post,userAccountSetting,likeService.getListUserLikedPost(post.getId())));
+            });
+        });
+        postInformations.sort(new SortClassCustom.PostByDateCreate());
+        return postInformations;
     }
 
     public String like(String uId, String pId) {
