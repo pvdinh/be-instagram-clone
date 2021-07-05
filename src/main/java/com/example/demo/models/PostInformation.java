@@ -1,16 +1,20 @@
 package com.example.demo.models;
 
+import java.util.List;
+
 public class PostInformation {
     private Post post;
     private UserAccountSetting userAccountSetting;
+    private List<String> likes;
 
     public PostInformation() {
         super();
     }
 
-    public PostInformation(Post post, UserAccountSetting userAccountSetting) {
+    public PostInformation(Post post, UserAccountSetting userAccountSetting, List<String> likes) {
         this.post = post;
         this.userAccountSetting = userAccountSetting;
+        this.likes = likes;
     }
 
     public Post getPost() {
@@ -27,5 +31,13 @@ public class PostInformation {
 
     public void setUserAccountSetting(UserAccountSetting userAccountSetting) {
         this.userAccountSetting = userAccountSetting;
+    }
+
+    public List<String> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<String> likes) {
+        this.likes = likes;
     }
 }

@@ -22,6 +22,8 @@ public class PostService {
     private UserAccountRepository userAccountRepository;
     @Autowired
     private UserAccountSettingRepository userAccountSettingRepository;
+    @Autowired
+    private LikeService likeService;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -46,19 +48,19 @@ public class PostService {
         Post post=postRepository.findPostById(pId);
         if(post != null){
             UserAccountSetting userAccountSetting=userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
-            return new PostInformation(post,userAccountSetting);
+            return new PostInformation(post,userAccountSetting,likeService.getListUserLikedPost(post.getId()));
         }else {
-            return new PostInformation(null,null);
+            return new PostInformation(null,null,null);
         }
     }
 
-    public List<PostInformation> getAllPostInformationFollowing(){
+        public List<PostInformation> getAllPostInformationFollowing(){
         List<PostInformation> postInformations = new ArrayList<>();
         List<UserAccountSetting> userAccountSettings = userAccountSettingRepository.findAll();
         userAccountSettings.forEach(userAccountSetting -> {
             List<Post> posts = postRepository.findPostByUserId(userAccountSetting.getId());
             posts.forEach(post -> {
-                postInformations.add(new PostInformation(post,userAccountSetting));
+                postInformations.add(new PostInformation(post,userAccountSetting,likeService.getListUserLikedPost(post.getId())));
             });
         });
         postInformations.sort(new SortClassCustom.PostByDateCreate());
