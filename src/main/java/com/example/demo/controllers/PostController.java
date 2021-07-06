@@ -43,7 +43,7 @@ public class PostController {
     }
     @PostMapping("/{postId}/unlike")
     public BaseResponse unLike(@PathVariable(name = "postId") String postId){
-        return new ResponseMessage(HttpStatus.OK.value(),postService.unLike(userAccountService.getUID(),postId));
+        return new ResponseMessage(HttpStatus.ACCEPTED.value(),postService.unLike(userAccountService.getUID(),postId));
     }
     @GetMapping("/{postId}/get")
     public BaseResponse getPostInformationOfUser(@PathVariable(name = "postId") String postId){
