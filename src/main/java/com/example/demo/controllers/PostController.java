@@ -1,9 +1,11 @@
 package com.example.demo.controllers;
 
+import com.example.demo.models.Comment;
 import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
 import com.example.demo.response.ResponseMessage;
 import com.example.demo.response.ResponseObject;
+import com.example.demo.services.CommentService;
 import com.example.demo.services.PostService;
 import com.example.demo.services.UserAccountService;
 import com.example.demo.utils.UsernameFromJWT;
@@ -21,6 +23,8 @@ public class PostController {
     private PostService postService;
     @Autowired
     private UserAccountService userAccountService;
+    @Autowired
+    private CommentService commentService;
 
     @GetMapping
     public BaseResponse findAllPost() {
@@ -52,5 +56,13 @@ public class PostController {
     @GetMapping("/following")
     public BaseResponse getAllPostFollowingUser(){
         return new ResponseObject(HttpStatus.OK.value(),postService.getAllPostInformationFollowing());
+    }
+    @GetMapping("/{postId}/comment")
+    public BaseResponse getAllCommentInPost(@PathVariable(name = "postId")String pId){
+        return new ResponseObject(HttpStatus.OK.value(),commentService.findCommentByIdPost(pId));
+    }
+    @PostMapping("/comment")
+    public BaseResponse addCommentInPost(@RequestBody Comment comment){
+        return new ResponseMessage(HttpStatus.OK.value(),commentService.addCommentInPost(comment));
     }
 }

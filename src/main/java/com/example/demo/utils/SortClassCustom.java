@@ -14,7 +14,7 @@ public class SortClassCustom {
         }
     }
 
-    public static class LikeByDateLiked implements Comparator<Like> {
+    public static class LikeByDateLiked implements Comparator<Like> {   
         @Override
         public int compare(Like o1, Like o2) {
             return Long.compare(o2.getDateLiked(), o1.getDateLiked());
