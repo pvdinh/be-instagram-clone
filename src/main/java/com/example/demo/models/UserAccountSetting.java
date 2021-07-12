@@ -106,4 +106,16 @@ public class UserAccountSetting {
     public void setWebsite(String website) {
         this.website = website;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this){
+            return true;
+        }
+        if(!(obj instanceof UserAccountSetting)){
+            return false;
+        }
+        UserAccountSetting userAccountSetting = (UserAccountSetting) obj;
+        return this.id.equalsIgnoreCase(userAccountSetting.getId());
+    }
 }
