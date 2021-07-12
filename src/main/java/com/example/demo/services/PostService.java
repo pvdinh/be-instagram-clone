@@ -19,11 +19,13 @@ public class PostService {
     @Autowired
     private LikeRepository likeRepository;
     @Autowired
-    private UserAccountRepository userAccountRepository;
+    private UserAccountService userAccountService;
     @Autowired
     private UserAccountSettingRepository userAccountSettingRepository;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private FollowService followService;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -44,23 +46,27 @@ public class PostService {
         return posts;
     }
 
-    public PostInformation getPostInformationOfUser(String pId){
-        Post post=postRepository.findPostById(pId);
-        if(post != null){
-            UserAccountSetting userAccountSetting=userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
-            return new PostInformation(post,userAccountSetting,likeService.getListUserLikedPost(post.getId()));
-        }else {
-            return new PostInformation(null,null,null);
+    public PostInformation getPostInformationOfUser(String pId) {
+        Post post = postRepository.findPostById(pId);
+        if (post != null) {
+            UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
+            return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()));
+        } else {
+            return new PostInformation(null, null, null);
         }
     }
 
-        public List<PostInformation> getAllPostInformationFollowing(){
+    public List<PostInformation> getAllPostInformationFollowing() {
         List<PostInformation> postInformations = new ArrayList<>();
-        List<UserAccountSetting> userAccountSettings = userAccountSettingRepository.findAll();
+        List<UserAccountSetting> userAccountSettings = new ArrayList<>();
+        List<Follow> follows = followService.findFollowByUserCurrent();
+        follows.forEach(follow -> {
+            userAccountSettings.add(userAccountSettingRepository.findUserAccountSettingById(follow.getUserFollowing()));
+        });
         userAccountSettings.forEach(userAccountSetting -> {
             List<Post> posts = postRepository.findPostByUserId(userAccountSetting.getId());
             posts.forEach(post -> {
-                postInformations.add(new PostInformation(post,userAccountSetting,likeService.getListUserLikedPost(post.getId())));
+                postInformations.add(new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId())));
             });
         });
         postInformations.sort(new SortClassCustom.PostByDateCreate());
