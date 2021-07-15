@@ -1,6 +1,7 @@
 package com.example.demo.filters;
 
 import com.example.demo.models.Account;
+import com.example.demo.security.oauth2.CustomOauth2User;
 import com.example.demo.utils.ConvertSHA1;
 import com.example.demo.utils.TokenAuthentication;
 import com.google.gson.Gson;
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -31,6 +33,19 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         BufferedReader reader = httpServletRequest.getReader();
         Gson gson = new Gson();
         Account account = gson.fromJson(reader, Account.class);
+//        CustomOauth2User customOauth2User = new CustomOauth2User();
+//        try {
+//            customOauth2User = (CustomOauth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            Authentication authentication = getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(
+//                    customOauth2User.getId(),
+//                    ConvertSHA1.convertSHA1(customOauth2User.getId()),
+//                    Collections.emptyList()
+//            ));
+//            return authentication;
+//        }catch (NullPointerException e){
+//            System.out.println("Not login Facebook");
+//        }
+
         Authentication authentication = getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(
                 account.getUsername(),
                 ConvertSHA1.convertSHA1(account.getPassword()),

@@ -1,0 +1,26 @@
+#spring:
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          facebook:
+#            client-id: 504704323950112
+#            client-secret: 509e04777e715320758fc9664b674160
+#            scope:
+#              - email
+#              - public_profile
+#              - user_birthday
+#              - user_hometown
+#            user-info-uri: https://graph:facebook:com/me?fields=id,name,email,picture,birthday,hometown
+#  data:
+#    mongodb:
+#      authentication-database: admin
+#      username: root
+#      password: rootpassword
+#      database: instagram-clone
+#      port: 27017
+#      host: localhost
+#      auto-index-creation: true
+#server:
+#  servlet:
+#    context-path: /api/v1
