@@ -18,10 +18,10 @@ import java.util.Collections;
 import java.util.Date;
 
 public class TokenAuthentication {
-    static final long EXPIRATIONTIME = 3600 * 1000 * 24 * 10; // 10 days
-    static final String SECRET = "ThisIsASecret";
-    static final String TOKEN_PREFIX = "Bearer";
-    static final String HEADER_STRING = "Authorization";
+    public static final long EXPIRATIONTIME = 3600 * 1000 * 24 * 10; // 10 days
+    public static final String SECRET = "ThisIsASecret";
+    public static final String TOKEN_PREFIX = "Bearer";
+    public static final String HEADER_STRING = "Authorization";
 
     public static void addAuthentication(HttpServletResponse response, String username) throws IOException {
         String jwt = Jwts.builder().setSubject(username)

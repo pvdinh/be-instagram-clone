@@ -15,17 +15,19 @@ public class UserAccount {
     private String email;
     @Indexed(unique = true)
     private String phoneNumber;
+    private AuthProvider authProvider;
 
     public UserAccount() {
         super();
     }
 
-    public UserAccount(String id, String username, String password, String email, String phoneNumber) {
+    public UserAccount(String id, String username, String password, String email, String phoneNumber, AuthProvider authProvider) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.authProvider = authProvider;
     }
 
     public String getId() {
@@ -66,5 +68,13 @@ public class UserAccount {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
     }
 }

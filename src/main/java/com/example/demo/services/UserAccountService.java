@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.models.UserAccount;
+import com.example.demo.models.UserAccountSetting;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UserAccountService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        UserAccount userAccount = userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumber(s,s,s);
+        UserAccount userAccount = userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(s,s,s,s);
         if(userAccount != null){
             return org.springframework.security.core.userdetails.User
                     .withUsername(userAccount.getUsername())
@@ -28,10 +29,18 @@ public class UserAccountService implements UserDetailsService {
         }else throw new NullPointerException("NOT FOUND : " + s);
     }
 
-    public UserAccount findUserAccountByUsernameOrEmailOrPhoneNumber(String s){
-        return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumber(s,s,s);
+    public UserAccount findUserAccountByUsernameOrEmailOrPhoneNumberOrId(String s){
+        return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(s,s,s,s);
     }
     public String getUID(){
-        return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumber(UsernameFromJWT.get(),UsernameFromJWT.get(),UsernameFromJWT.get()).getId();
+        return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(UsernameFromJWT.get(),UsernameFromJWT.get(),UsernameFromJWT.get(),UsernameFromJWT.get()).getId();
+    }
+
+    public void addUserAccount(UserAccount userAccount){
+        try{
+            userAccountRepository.insert(userAccount);
+        }catch (Exception e){
+            System.out.println("ACCOUNT EXISTS");
+        }
     }
 }

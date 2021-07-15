@@ -20,8 +20,15 @@ public class UserAccountSettingService {
     }
 
     public UserAccountSetting findUserAccountSettingByJwt(){
-        UserAccount userAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumber(UsernameFromJWT.get());
+        UserAccount userAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(UsernameFromJWT.get());
         return userAccountSettingRepository.findUserAccountSettingByUsername(userAccount.getUsername());
     }
 
+    public void addUserAccountSetting(UserAccountSetting userAccountSetting){
+        try{
+            userAccountSettingRepository.insert(userAccountSetting);
+        }catch (Exception e){
+            System.out.println("Account EXISTS");
+        }
+    }
 }

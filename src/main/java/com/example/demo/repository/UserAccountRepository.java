@@ -6,5 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.stream.Stream;
 
 public interface UserAccountRepository extends MongoRepository<UserAccount,String> {
-    UserAccount findUserAccountByUsernameOrEmailOrPhoneNumber(String username,String email,String phoneNumber);
+    UserAccount findUserAccountByUsernameOrEmailOrPhoneNumberOrId(String username,String email,String phoneNumber,String Id);
 }
