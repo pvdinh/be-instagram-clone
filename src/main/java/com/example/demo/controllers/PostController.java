@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.models.Comment;
+import com.example.demo.models.Post;
 import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
 import com.example.demo.response.ResponseMessage;
@@ -64,5 +65,10 @@ public class PostController {
     @PostMapping("/comment")
     public BaseResponse addCommentInPost(@RequestBody Comment comment){
         return new ResponseMessage(HttpStatus.OK.value(),commentService.addCommentInPost(comment));
+    }
+
+    @PostMapping
+    public BaseResponse postNewPost(@RequestBody Post post){
+        return new ResponseMessage(HttpStatus.OK.value(),postService.postNewPost(post));
     }
 }
