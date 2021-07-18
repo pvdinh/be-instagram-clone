@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -96,6 +97,18 @@ public class PostService {
             likeRepository.delete(like);
             return SUCCESS;
         } else {
+            return FAIL;
+        }
+    }
+    public String postNewPost(Post post){
+        try{
+            post.setDateCreated(System.currentTimeMillis());
+            post.setLikes(Collections.emptyList());
+            post.setUserId(userAccountService.getUID());
+            postRepository.insert(post);
+            return SUCCESS;
+        }catch (Exception e){
+            System.out.println("POST EXISTS");
             return FAIL;
         }
     }
