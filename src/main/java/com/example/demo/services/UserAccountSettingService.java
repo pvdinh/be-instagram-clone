@@ -14,6 +14,8 @@ public class UserAccountSettingService {
     private UserAccountSettingRepository userAccountSettingRepository;
     @Autowired
     private UserAccountService userAccountService;
+    @Autowired
+    private FollowService followService;
 
     public UserAccountSetting findUserAccountSettingByUsername(String username){
         return userAccountSettingRepository.findUserAccountSettingByUsername(username);
@@ -27,6 +29,7 @@ public class UserAccountSettingService {
     public void addUserAccountSetting(UserAccountSetting userAccountSetting){
         try{
             userAccountSettingRepository.insert(userAccountSetting);
+            followService.beginFollowing(userAccountSetting.getId());
         }catch (Exception e){
             System.out.println("Account EXISTS");
         }
