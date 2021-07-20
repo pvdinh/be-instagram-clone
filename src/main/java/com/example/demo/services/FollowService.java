@@ -28,6 +28,15 @@ public class FollowService {
     public List<Follow> findFollowByUserFollowing(String uFId){
         return followRepository.findFollowByUserFollowing(uFId);
     }
+    public String insert(String id){
+        try{
+            followRepository.insert(new Follow("",id,id,System.currentTimeMillis()));
+            return SUCCESS;
+        }catch (Exception e){
+            System.out.println("Duplicate");
+            return FAIL;
+        }
+    }
     public String beginFollowing(String userFollowingId){
         try{
             followRepository.insert(new Follow("",userAccountService.getUID(),userFollowingId,System.currentTimeMillis()));

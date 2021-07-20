@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserAccountSettingService {
+    private final String SUCCESS = "success";
+    private final String FAIL = "fail";
     @Autowired
     private UserAccountSettingRepository userAccountSettingRepository;
     @Autowired
@@ -26,12 +28,14 @@ public class UserAccountSettingService {
         return userAccountSettingRepository.findUserAccountSettingByUsername(userAccount.getUsername());
     }
 
-    public void addUserAccountSetting(UserAccountSetting userAccountSetting){
+    public String addUserAccountSetting(UserAccountSetting userAccountSetting){
         try{
             userAccountSettingRepository.insert(userAccountSetting);
-            followService.beginFollowing(userAccountSetting.getId());
+            followService.insert(userAccountSetting.getId());
+            return SUCCESS;
         }catch (Exception e){
             System.out.println("Account EXISTS");
+            return FAIL;
         }
     }
 }
