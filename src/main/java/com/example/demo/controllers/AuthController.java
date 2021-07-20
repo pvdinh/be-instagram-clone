@@ -10,10 +10,7 @@ import com.example.demo.services.UserAccountSettingService;
 import com.example.demo.utils.ConvertSHA1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,5 +35,20 @@ public class AuthController {
         } else {
             return new ResponseMessage(HttpStatus.ACCEPTED.value(), resMess);
         }
+    }
+
+    @PostMapping("/{phone}/validatePhone")
+    public BaseResponse validatePhone(@PathVariable(name = "phone") String phone){
+        return userAccountService.validatePhone(phone) ? new ResponseMessage(HttpStatus.OK.value(),"error") : new ResponseMessage(HttpStatus.OK.value(),"success");
+    }
+
+    @PostMapping("/{email}/validateEmail")
+    public BaseResponse validateEmail(@PathVariable(name = "email") String email){
+        return userAccountService.validateEmail(email) ? new ResponseMessage(HttpStatus.OK.value(),"error") : new ResponseMessage(HttpStatus.OK.value(),"success");
+    }
+
+    @PostMapping("/{username}/validateUsername")
+    public BaseResponse validateUsername(@PathVariable(name = "username") String username){
+        return userAccountService.validateUsername(username) ? new ResponseMessage(HttpStatus.OK.value(),"error") : new ResponseMessage(HttpStatus.OK.value(),"success");
     }
 }
