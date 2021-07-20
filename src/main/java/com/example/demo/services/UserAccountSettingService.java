@@ -31,7 +31,7 @@ public class UserAccountSettingService {
     public String addUserAccountSetting(UserAccountSetting userAccountSetting){
         try{
             userAccountSettingRepository.insert(userAccountSetting);
-            followService.beginFollowing(userAccountSetting.getId());
+            followService.insert(userAccountSetting.getId());
             return SUCCESS;
         }catch (Exception e){
             System.out.println("Account EXISTS");
