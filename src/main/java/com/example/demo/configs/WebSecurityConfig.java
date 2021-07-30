@@ -37,9 +37,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     //config to ignoring antMatchers
+    //swagger config
     @Override
     public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
+        web.ignoring().antMatchers(
+                "/v2/api-docs",
+                "/v3/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/images/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**");
     }
 
     //config to filter antMatchers

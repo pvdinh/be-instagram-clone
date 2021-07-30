@@ -22,6 +22,9 @@ public class UserAccountSettingService {
     public UserAccountSetting findUserAccountSettingByUsername(String username){
         return userAccountSettingRepository.findUserAccountSettingByUsername(username);
     }
+    public UserAccountSetting findUserAccountSettingById(String id){
+        return userAccountSettingRepository.findUserAccountSettingById(id);
+    }
 
     public UserAccountSetting findUserAccountSettingByJwt(){
         UserAccount userAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(UsernameFromJWT.get());
