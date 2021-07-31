@@ -62,6 +62,7 @@ public class TokenAuthentication {
 
     public static void addHeader(HttpServletResponse res) {
         res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
         res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
         res.setHeader("Access-Control-Max-Age", "12000");
         res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");

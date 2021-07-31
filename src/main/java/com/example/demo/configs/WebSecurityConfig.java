@@ -47,8 +47,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/swagger-resources/**",
                 "/images/**",
                 "/configuration/security",
-                "/swagger-ui.html",
-                "/webjars/**");
+                "/swagger-ui.html"
+        );
     }
 
     //config to filter antMatchers
@@ -57,6 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable().authorizeRequests()
                 .antMatchers("/auth/**", "/oauth2/**").permitAll()
                 .antMatchers("/home").permitAll()
+                .antMatchers(
+                        "/ws/**",
+                        "/webjars/**",
+                        "/inbox/public",
+                        "/app/chat.sendMessage",
+                        "/app/**").permitAll()
                 .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
