@@ -37,9 +37,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     //config to ignoring antMatchers
+    //swagger config
     @Override
     public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
+        web.ignoring().antMatchers(
+                "/v2/api-docs",
+                "/v3/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/images/**",
+                "/configuration/security",
+                "/swagger-ui.html"
+        );
     }
 
     //config to filter antMatchers
@@ -48,6 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable().authorizeRequests()
                 .antMatchers("/auth/**", "/oauth2/**").permitAll()
                 .antMatchers("/home").permitAll()
+                .antMatchers(
+                        "/ws/**",
+                        "/webjars/**",
+                        "/inbox/public",
+                        "/app/chat.sendMessage",
+                        "/app/**").permitAll()
                 .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
