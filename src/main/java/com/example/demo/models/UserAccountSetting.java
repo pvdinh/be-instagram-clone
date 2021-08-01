@@ -108,6 +108,8 @@ public class UserAccountSetting {
     }
 
     @Override
+    //để thực hiện các thao tác trên List cần so sánh như removeAll
+    //VD: trong FollowingService.suggestionsToFollow
     public boolean equals(Object obj) {
         if(obj == this){
             return true;
