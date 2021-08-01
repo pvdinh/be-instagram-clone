@@ -59,6 +59,7 @@ public class MessageService {
             messageInformations.add(new MessageInformation(userAccountSettingService.findUserAccountSettingById(s)
                     ,messages.size() > 10 ? messages.subList(messages.size()-10,messages.size()) : messages));
         });
+        Collections.sort(messageInformations);
         return messageInformations;
     }
 
