@@ -35,4 +35,13 @@ public class MessageController {
     public BaseResponse postMessage(@RequestBody Message message){
         return new ResponseMessage(HttpStatus.OK.value(),messageService.postMessage(message));
     }
+
+    @PostMapping("/{search}/suggested")
+    public BaseResponse findReceiverByUsername(@PathVariable(name = "search") String search){
+        try{
+            return new ResponseData(HttpStatus.OK.value(), messageService.findReceiverByUsername(search));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
 }

@@ -22,7 +22,7 @@ public class LikeService {
         List<Like> likes = likeRepository.findLikeByIdPost(pId);
         likes.sort(new SortClassCustom.LikeByDateLiked());
         likes.forEach(like -> {
-            listDisplayNameLikes.add(userAccountSettingRepository.findUserAccountSettingById(like.getIdUser()).getDisplayName());
+            listDisplayNameLikes.add(userAccountSettingRepository.findUserAccountSettingById(like.getIdUser()).getUsername());
         });
         return listDisplayNameLikes;
     }

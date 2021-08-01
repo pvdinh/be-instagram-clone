@@ -16,6 +16,7 @@ public class UserAccount {
     @Indexed(unique = true)
     private String phoneNumber;
     private AuthProvider authProvider;
+    private String displayName;
 
     public UserAccount() {
         super();
@@ -76,5 +77,13 @@ public class UserAccount {
 
     public void setAuthProvider(AuthProvider authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }
