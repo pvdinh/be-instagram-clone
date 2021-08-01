@@ -20,4 +20,10 @@ public class MessageWebSocketController {
         messageService.postMessage(message);
         return message;
     }
+
+    @MessageMapping("chat.sendMessageToAll")
+    @SendTo("/inbox/allInbox")
+    public Message receiverMessage(@Payload Message message){
+        return message;
+    }
 }
