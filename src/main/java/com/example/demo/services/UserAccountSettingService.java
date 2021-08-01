@@ -8,6 +8,8 @@ import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserAccountSettingService {
     private final String SUCCESS = "success";
@@ -24,6 +26,9 @@ public class UserAccountSettingService {
     }
     public UserAccountSetting findUserAccountSettingById(String id){
         return userAccountSettingRepository.findUserAccountSettingById(id);
+    }
+    public List<UserAccountSetting> findUserAccountSettingsByUsernameContains(String search){
+        return userAccountSettingRepository.findUserAccountSettingsByUsernameContains(search);
     }
 
     public UserAccountSetting findUserAccountSettingByJwt(){

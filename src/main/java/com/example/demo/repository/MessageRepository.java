@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface MessageRepository extends MongoRepository<Message,String> {
     List<Message> findMessagesBySender(String sender);
+    List<Message> findMessagesByReceiver(String receiver);
     List<Message> findMessagesBySenderAndReceiver(String sender,String receiver);
 }
