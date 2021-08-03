@@ -7,6 +7,7 @@ import com.example.demo.models.profile.PostDetail;
 import com.example.demo.models.profile.Profile;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
+import com.example.demo.utils.SortClassCustom;
 import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,7 @@ public class UserAccountSettingService {
                 int numberOfComments=commentService.findCommentByIdPost(post.getId()).size();
                 postDetails.add(new PostDetail(post,numberOfComments,listLikeString));
             });
+            postDetails.sort(new SortClassCustom.PostProfileByDateCreate());
             return new Profile(userAccountSetting,postDetails);
         }else {
             return null;
