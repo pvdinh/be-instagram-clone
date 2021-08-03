@@ -106,8 +106,12 @@ public class PostService {
             post.setDateCreated(System.currentTimeMillis());
             post.setLikes(Collections.emptyList());
             post.setUserId(userAccountService.getUID());
-            postRepository.insert(post);
-            return SUCCESS;
+            if(post.getUserId() == "" || post.getUserId() == null){
+                return FAIL;
+            }else {
+                postRepository.insert(post);
+                return SUCCESS;
+            }
         }catch (Exception e){
             System.out.println("POST EXISTS");
             return FAIL;
