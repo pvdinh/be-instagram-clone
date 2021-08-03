@@ -100,6 +100,7 @@ public class PostService {
             return FAIL;
         }
     }
+
     public String postNewPost(Post post){
         try{
             post.setDateCreated(System.currentTimeMillis());
