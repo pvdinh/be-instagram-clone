@@ -66,9 +66,16 @@ public class PostController {
     public BaseResponse addCommentInPost(@RequestBody Comment comment){
         return new ResponseMessage(HttpStatus.OK.value(),commentService.addCommentInPost(comment));
     }
-
     @PostMapping
     public BaseResponse postNewPost(@RequestBody Post post){
         return new ResponseMessage(HttpStatus.OK.value(),postService.postNewPost(post));
+    }
+    @PostMapping("{postId}/delete")
+    public BaseResponse postNewPost(@PathVariable(name = "postId")String pId){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),postService.deletePost(pId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
 }
