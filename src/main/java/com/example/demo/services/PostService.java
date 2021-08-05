@@ -117,4 +117,16 @@ public class PostService {
             return FAIL;
         }
     }
+
+    public String deletePost(String pId){
+        try {
+            Post post=postRepository.findPostById(pId);
+            if(post!=null){
+                postRepository.delete(post);
+                return SUCCESS;
+            }else return FAIL;
+        }catch (Exception e){
+            return FAIL;
+        }
+    }
 }
