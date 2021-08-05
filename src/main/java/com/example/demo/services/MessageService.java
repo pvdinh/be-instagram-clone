@@ -90,14 +90,14 @@ public class MessageService {
                 userAccountSettings.add(userAccountSetting);
             }
         });
-        if(userAccountSettings.size() < 10){
+        if(userAccountSettings.size() < 50){
             userAccountSettingService.findUserAccountSettingsByUsernameContains(search).forEach(userAccountSetting -> {
                 if(!userAccountSettings.contains(userAccountSetting)){
                     userAccountSettings.add(userAccountSetting);
                 }
             });
         }
-        return userAccountSettings.size() > 9 ? userAccountSettings.subList(0,10) : userAccountSettings;
+        return userAccountSettings.size() > 49 ? userAccountSettings.subList(0,50) : userAccountSettings;
     }
 
 }
