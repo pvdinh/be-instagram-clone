@@ -45,7 +45,8 @@ public class UserAccountService implements UserDetailsService {
             userAccountRepository.insert(userAccount);
             return SUCCESS;
         }catch (Exception e){
-            System.out.println("ACCOUNT EXISTS");
+            userAccountRepository.save(userAccount);
+            System.out.println("UPDATE ACCOUNT EXISTS");
             return FAIL;
         }
     }

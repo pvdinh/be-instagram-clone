@@ -53,7 +53,8 @@ public class UserAccountSettingService {
             followService.insert(userAccountSetting.getId());
             return SUCCESS;
         }catch (Exception e){
-            System.out.println("Account EXISTS");
+            userAccountSettingRepository.save(userAccountSetting);
+            System.out.println("Update Account EXISTS");
             return FAIL;
         }
     }
