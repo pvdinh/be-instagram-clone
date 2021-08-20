@@ -43,7 +43,7 @@ public class UserAccountSettingController {
     @PostMapping("/edit")
     public BaseResponse editUserAccountSetting(@RequestBody HashMap<String,String> data){
         try {
-            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),userAccountSettingService.editUserAccountSetting(data));
+            return new ResponseMessage(HttpStatus.OK.value(),userAccountSettingService.editUserAccountSetting(data));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
@@ -53,6 +53,15 @@ public class UserAccountSettingController {
     public BaseResponse getPrivateInfo(){
         try{
             return new ResponseObject(HttpStatus.OK.value(),userAccountSettingService.getPrivateInfo());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @PostMapping("/change-password")
+    public BaseResponse changePassword(@RequestBody HashMap<String,String> data){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),userAccountSettingService.changePassword(data));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }

@@ -7,6 +7,7 @@ import com.example.demo.models.profile.PostDetail;
 import com.example.demo.models.profile.Profile;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
+import com.example.demo.utils.ConvertSHA1;
 import com.example.demo.utils.SortClassCustom;
 import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class UserAccountSettingService {
     private final String NOT_AVAILABLE_NAME = "This display name isn't available. Please try another.";
     private final String PROFILE_SAVED = "Profile saved.";
     private final String CHANGED_USERNAME = "Username changed. Please login again";
+    private final String CHANGED_PASSWORD = "Password changed.";
+    private final String PASSWORD_INCORRECT = "Your old password was entered incorrectly. Please enter it again.";
     @Autowired
     private UserAccountSettingRepository userAccountSettingRepository;
     @Autowired
@@ -149,6 +152,23 @@ public class UserAccountSettingService {
             return privateInfo;
         } catch (Exception e) {
             return privateInfo;
+        }
+    }
+
+    public String changePassword(HashMap<String, String> data) {
+        String oldPassword = ConvertSHA1.convertSHA1(data.get("oldPassword"));
+        String newPassword = ConvertSHA1.convertSHA1(data.get("newPassword"));
+        try {
+            UserAccount userAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(userAccountService.getUID());
+            if(oldPassword.equals(userAccount.getPassword())){
+                userAccount.setPassword(newPassword);
+                userAccountRepository.save(userAccount);
+                return CHANGED_PASSWORD;
+            }else {
+                return PASSWORD_INCORRECT;
+            }
+        } catch (Exception e) {
+            return FAIL;
         }
     }
 
