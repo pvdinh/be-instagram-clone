@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping("/user-account-setting")
 public class UserAccountSettingController {
@@ -36,6 +38,24 @@ public class UserAccountSettingController {
         UserAccountSetting userAccountSetting = userAccountSettingService.findUserAccountSettingByJwt();
         return userAccountSetting != null ? new ResponseObject(HttpStatus.OK.value(),userAccountSetting)
                 : new ResponseMessage(HttpStatus.ACCEPTED.value(),"not found ");
+    }
+
+    @PostMapping("/edit")
+    public BaseResponse editUserAccountSetting(@RequestBody HashMap<String,String> data){
+        try {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),userAccountSettingService.editUserAccountSetting(data));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/get-private-info")
+    public BaseResponse getPrivateInfo(){
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),userAccountSettingService.getPrivateInfo());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
 
 }
