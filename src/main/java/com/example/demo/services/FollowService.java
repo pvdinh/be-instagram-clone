@@ -40,6 +40,7 @@ public class FollowService {
     public String beginFollowing(String userFollowingId){
         try{
             followRepository.insert(new Follow("",userAccountService.getUID(),userFollowingId,System.currentTimeMillis()));
+            updateFollow(userFollowingId);
             return SUCCESS;
         }catch (Exception e){
             System.out.println("Duplicate");
@@ -50,11 +51,27 @@ public class FollowService {
         try{
             Follow follow=followRepository.findFollowsByUserCurrentAndUserFollowing(userAccountService.getUID(),userFollowingId);
             followRepository.delete(followRepository.findFollowsByUserCurrentAndUserFollowing(userAccountService.getUID(),userFollowingId));
+            updateFollow(userFollowingId);
             return SUCCESS;
         }catch (Exception e){
             return FAIL;
         }
     }
+
+    public void updateFollow(String userFollowingId){
+        //Cập nhật lại số người theo dõi của bên thứ 2(tăng hoặc giảm 1)
+        //trong TH beginFollow : sẽ tăng lên 1, Follower của bên thứ 2
+        UserAccountSetting userAccountSettingFollowing = userAccountSettingRepository.findUserAccountSettingById(userFollowingId);
+        userAccountSettingFollowing.setFollowers(followRepository.findFollowByUserFollowing(userFollowingId).size());
+        userAccountSettingRepository.save(userAccountSettingFollowing);
+
+        //cập nhật lại số người đang theo dõi của current user(tăng hoặc giảm 1)
+        //trong TH beginFollow : sẽ tăng lên 1, Following của người dùng hiện tại
+        UserAccountSetting userAccountSettingFollower = userAccountSettingRepository.findUserAccountSettingById(userAccountService.getUID());
+        userAccountSettingFollower.setFollowing(followRepository.findFollowByUserCurrent(userAccountService.getUID()).size());
+        userAccountSettingRepository.save(userAccountSettingFollower);
+    }
+
     public List<UserAccountSetting> suggestionsToFollow(){
         List<UserAccountSetting> userAccountSettings = new ArrayList<>();
         List<UserAccountSetting> userAccountSettingsFollowed = new ArrayList<>();

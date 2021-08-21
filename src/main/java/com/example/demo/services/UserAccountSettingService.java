@@ -66,6 +66,11 @@ public class UserAccountSettingService {
             followService.insert(userAccountSetting.getId());
             return SUCCESS;
         } catch (Exception e) {
+            //Khi tài khoản đã tồn tại , tiến hành update lại các thông tin ngoại trừ thông tin về posts, following, follower
+            UserAccountSetting uAs=userAccountSettingRepository.findUserAccountSettingById(userAccountSetting.getId());
+            userAccountSetting.setPosts(uAs.getPosts());
+            userAccountSetting.setFollowing(uAs.getFollowing());
+            userAccountSetting.setFollowers(uAs.getFollowers());
             userAccountSettingRepository.save(userAccountSetting);
             System.out.println("Update Account EXISTS");
             return FAIL;
