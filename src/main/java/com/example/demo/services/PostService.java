@@ -110,6 +110,7 @@ public class PostService {
                 return FAIL;
             }else {
                 postRepository.insert(post);
+                updatePostQuantity();
                 return SUCCESS;
             }
         }catch (Exception e){
@@ -123,10 +124,18 @@ public class PostService {
             Post post=postRepository.findPostById(pId);
             if(post!=null){
                 postRepository.delete(post);
+                updatePostQuantity();
                 return SUCCESS;
             }else return FAIL;
         }catch (Exception e){
             return FAIL;
         }
+    }
+
+    public void updatePostQuantity(){
+        //Cập nhật lại số lượng bài đăng khi thêm hoặc xoá
+        UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(userAccountService.getUID());
+        userAccountSetting.setPosts(postRepository.findPostByUserId(userAccountService.getUID()).size());
+        userAccountSettingRepository.save(userAccountSetting);
     }
 }
