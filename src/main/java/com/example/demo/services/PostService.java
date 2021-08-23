@@ -122,7 +122,8 @@ public class PostService {
     public String deletePost(String pId){
         try {
             Post post=postRepository.findPostById(pId);
-            if(post!=null){
+            String x =userAccountService.getUID();
+            if(post!=null && post.getUserId().equals(userAccountService.getUID())){
                 postRepository.delete(post);
                 updatePostQuantity();
                 return SUCCESS;

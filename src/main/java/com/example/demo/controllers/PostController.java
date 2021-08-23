@@ -70,7 +70,7 @@ public class PostController {
     public BaseResponse postNewPost(@RequestBody Post post){
         return new ResponseMessage(HttpStatus.OK.value(),postService.postNewPost(post));
     }
-    @PostMapping("{postId}/delete")
+    @DeleteMapping("{postId}/delete")
     public BaseResponse postNewPost(@PathVariable(name = "postId")String pId){
         try{
             return new ResponseMessage(HttpStatus.OK.value(),postService.deletePost(pId));
