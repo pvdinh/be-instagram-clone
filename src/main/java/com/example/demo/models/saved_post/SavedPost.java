@@ -1,11 +1,14 @@
 package com.example.demo.models.saved_post;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @CompoundIndex(name = "userId_postId",def = "{'userId': 1 , 'postId' : 1}", unique = true)
 public class SavedPost {
+    @Id
+    private String id;
     private String userId;
     private String postId;
     private long dateSaved;
