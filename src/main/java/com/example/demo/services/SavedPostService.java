@@ -48,6 +48,21 @@ public class SavedPostService {
         }
     }
 
+    public boolean checkSavedPost(String postId){
+        try{
+            Post post = postRepository.findPostById(postId);
+            if (post != null){
+                SavedPost savedPosts = savedPostRepository.findSavedPostByUserIdAndPostId(userAccountService.getUID(),post.getId());
+                if(savedPosts != null){
+                    return true;
+                }
+                else return false;
+            }else return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
     public List<PostDetail> getListPostSavedFromUID(){
         List<PostDetail> postDetails = new ArrayList<>();
         List<SavedPost> savedPosts = savedPostRepository.findSavedPostByUserId(userAccountService.getUID());

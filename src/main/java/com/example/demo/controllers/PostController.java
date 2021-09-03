@@ -81,6 +81,18 @@ public class PostController {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
     }
+
+    //Save post
+
+    @GetMapping("/{postId}/check-save-post")
+    public BaseResponse checkSavedPost(@PathVariable(name = "postId")String postId){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),String.valueOf(savedPostService.checkSavedPost(postId)));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
     @PostMapping("{postId}/begin-save-post")
     public BaseResponse beginSavePost(@PathVariable(name = "postId")String postId){
         try{
