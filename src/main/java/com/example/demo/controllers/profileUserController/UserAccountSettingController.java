@@ -1,11 +1,14 @@
-package com.example.demo.controllers;
+package com.example.demo.controllers.profileUserController;
 
 import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.profile.Profile;
 import com.example.demo.response.BaseResponse;
+import com.example.demo.response.ResponseData;
 import com.example.demo.response.ResponseMessage;
 import com.example.demo.response.ResponseObject;
+import com.example.demo.services.SavedPostService;
 import com.example.demo.services.UserAccountSettingService;
+import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,8 @@ public class UserAccountSettingController {
 
     @Autowired
     private UserAccountSettingService userAccountSettingService;
+    @Autowired
+    private SavedPostService savedPostService;
 
     @GetMapping("/{username}")
     public BaseResponse findUserAccountSettingByUsername(@PathVariable(name = "username") String username) {
@@ -62,6 +67,19 @@ public class UserAccountSettingController {
     public BaseResponse changePassword(@RequestBody HashMap<String,String> data){
         try{
             return new ResponseMessage(HttpStatus.OK.value(),userAccountSettingService.changePassword(data));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/{username}/get-saved-post")
+    public BaseResponse getSavedPost(@PathVariable(name = "username") String username){
+        try{
+            if(UsernameFromJWT.get().equals(username)){
+                return new ResponseData(HttpStatus.OK.value(),savedPostService.getListPostSavedFromUID());
+            }else {
+                return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+            }
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
