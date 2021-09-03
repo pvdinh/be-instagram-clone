@@ -8,6 +8,7 @@ import com.example.demo.response.ResponseMessage;
 import com.example.demo.response.ResponseObject;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.PostService;
+import com.example.demo.services.SavedPostService;
 import com.example.demo.services.UserAccountService;
 import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class PostController {
     private UserAccountService userAccountService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private SavedPostService savedPostService;
 
     @GetMapping
     public BaseResponse findAllPost() {
@@ -74,6 +77,24 @@ public class PostController {
     public BaseResponse postNewPost(@PathVariable(name = "postId")String pId){
         try{
             return new ResponseMessage(HttpStatus.OK.value(),postService.deletePost(pId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+    @PostMapping("{postId}/begin-save-post")
+    public BaseResponse beginSavePost(@PathVariable(name = "postId")String postId){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),savedPostService.beginSavePost(postId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+
+    @PostMapping("{postId}/end-save-post")
+    public BaseResponse endSavePost(@PathVariable(name = "postId")String postId){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),savedPostService.endSavePost(postId));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
