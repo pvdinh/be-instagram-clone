@@ -46,9 +46,13 @@ public class StoryService {
             if(stories.size() > 0){
                 List<PostDetail> postDetails = new ArrayList<>();
                 stories.forEach(story -> {
-                    postDetails.add(new PostDetail(postRepository.findPostById(story.getIdPost()),0, Collections.emptyList()));
+                    if(story.getDateEnd() > System.currentTimeMillis()){
+                        postDetails.add(new PostDetail(postRepository.findPostById(story.getIdPost()),0, Collections.emptyList()));
+                    }
                 });
-                profiles.add(new Profile(userAccountSetting,postDetails));
+                if(postDetails.size() > 0){
+                    profiles.add(new Profile(userAccountSetting,postDetails));
+                }
             }
         });
         return profiles;
