@@ -9,9 +9,17 @@ public class PostDetail {
     private Post post;
     private int numberOfComments;
     private List<String> likes;
+    private Long dateBeginStory;
 
     public PostDetail() {
         super();
+    }
+
+    public PostDetail(Post post, int numberOfComments, List<String> likes, Long dateBeginStory) {
+        this.post = post;
+        this.numberOfComments = numberOfComments;
+        this.likes = likes;
+        this.dateBeginStory = dateBeginStory;
     }
 
     public PostDetail(Post post, int numberOfComments, List<String> likes) {
@@ -42,5 +50,13 @@ public class PostDetail {
 
     public void setLikes(List<String> likes) {
         this.likes = likes;
+    }
+
+    public Long getDateBeginStory() {
+        return dateBeginStory;
+    }
+
+    public void setDateBeginStory(Long dateBeginStory) {
+        this.dateBeginStory = dateBeginStory;
     }
 }

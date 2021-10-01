@@ -47,7 +47,7 @@ public class StoryService {
                 List<PostDetail> postDetails = new ArrayList<>();
                 stories.forEach(story -> {
                     if(story.getDateEnd() > System.currentTimeMillis()){
-                        postDetails.add(new PostDetail(postRepository.findPostById(story.getIdPost()),0, Collections.emptyList()));
+                        postDetails.add(new PostDetail(postRepository.findPostById(story.getIdPost()),0, Collections.emptyList(),story.getDateStart()));
                     }
                 });
                 if(postDetails.size() > 0){
