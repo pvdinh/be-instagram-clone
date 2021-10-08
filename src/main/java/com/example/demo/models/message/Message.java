@@ -14,19 +14,21 @@ public class Message implements Comparable<Message> {
     private String receiver;
     private String sender;
     private String emotion;
+    private String replyStory;
     private String type;
 
     public Message() {
         super();
     }
 
-    public Message(String id, long dateSendMessage, String message, String receiver, String sender, String emotion, String type) {
+    public Message(String id, long dateSendMessage, String message, String receiver, String sender, String emotion, String replyStory, String type) {
         this.id = id;
         this.dateSendMessage = dateSendMessage;
         this.message = message;
         this.receiver = receiver;
         this.sender = sender;
         this.emotion = emotion;
+        this.replyStory = replyStory;
         this.type = type;
     }
 
@@ -84,6 +86,14 @@ public class Message implements Comparable<Message> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getReplyStory() {
+        return replyStory;
+    }
+
+    public void setReplyStory(String replyStory) {
+        this.replyStory = replyStory;
     }
 
     @Override
