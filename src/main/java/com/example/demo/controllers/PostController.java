@@ -58,8 +58,8 @@ public class PostController {
         return new ResponseObject(HttpStatus.OK.value(),postService.getPostInformationOfUser(postId));
     }
     @GetMapping("/following")
-    public BaseResponse getAllPostFollowingUser(){
-        return new ResponseObject(HttpStatus.OK.value(),postService.getAllPostInformationFollowing());
+    public BaseResponse getAllPostFollowingUser(@RequestParam(name = "page") int page,@RequestParam(name = "size") int size){
+        return new ResponseObject(HttpStatus.OK.value(),postService.getAllPostInformationFollowing(page,size));
     }
     @GetMapping("/{postId}/comment")
     public BaseResponse getAllCommentInPost(@PathVariable(name = "postId")String pId){

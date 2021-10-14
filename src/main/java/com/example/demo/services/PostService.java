@@ -57,7 +57,7 @@ public class PostService {
         }
     }
 
-    public List<PostInformation> getAllPostInformationFollowing() {
+    public List<PostInformation> getAllPostInformationFollowing(int page,int size) {
         List<PostInformation> postInformations = new ArrayList<>();
         List<UserAccountSetting> userAccountSettings = new ArrayList<>();
         List<Follow> follows = followService.findFollowByUserCurrent();
@@ -71,7 +71,8 @@ public class PostService {
             });
         });
         postInformations.sort(new SortClassCustom.PostByDateCreate());
-        return postInformations;
+        List<PostInformation> postInformations2 = postInformations.subList(page*size,(page*size) + size);
+        return postInformations2;
     }
 
     public String like(String uId, String pId) {
