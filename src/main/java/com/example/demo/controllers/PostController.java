@@ -32,49 +32,89 @@ public class PostController {
 
     @GetMapping
     public BaseResponse findAllPost() {
-        return new ResponseData(HttpStatus.OK.value(), postService.findAll());
+        try{
+            return new ResponseData(HttpStatus.OK.value(), postService.findAll());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
 
     @GetMapping("/{userId}")
     public BaseResponse findAllPostByUserId(@PathVariable(name = "userId") String userId) {
-        return new ResponseData(HttpStatus.OK.value(), postService.findAllByUserId(userId));
+        try{
+            return new ResponseData(HttpStatus.OK.value(), postService.findAllByUserId(userId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
 
     @PostMapping("/following")
     public BaseResponse findAllPostByListUserId(@RequestBody Map<String,List<String>> listUserId) {
-        return new ResponseData(HttpStatus.OK.value(), postService.findAllByListUserId(listUserId.get("following")));
+        try{
+            return new ResponseData(HttpStatus.OK.value(), postService.findAllByListUserId(listUserId.get("following")));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
 
     @PostMapping("/{postId}/like")
     public BaseResponse like(@PathVariable(name = "postId") String postId){
-        return new ResponseMessage(HttpStatus.OK.value(),postService.like(userAccountService.getUID(),postId));
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),postService.like(userAccountService.getUID(),postId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
     @PostMapping("/{postId}/unlike")
     public BaseResponse unLike(@PathVariable(name = "postId") String postId){
-        return new ResponseMessage(HttpStatus.ACCEPTED.value(),postService.unLike(userAccountService.getUID(),postId));
+        try{
+            return new ResponseMessage(HttpStatus.ACCEPTED.value(),postService.unLike(userAccountService.getUID(),postId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
     @GetMapping("/{postId}/get")
     public BaseResponse getPostInformationOfUser(@PathVariable(name = "postId") String postId){
-        return new ResponseObject(HttpStatus.OK.value(),postService.getPostInformationOfUser(postId));
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),postService.getPostInformationOfUser(postId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
     @GetMapping("/following")
     public BaseResponse getAllPostFollowingUser(@RequestParam(name = "page") int page,@RequestParam(name = "size") int size){
-        return new ResponseObject(HttpStatus.OK.value(),postService.getAllPostInformationFollowing(page,size));
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),postService.getAllPostInformationFollowing(page,size));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
     @GetMapping("/{postId}/comment")
     public BaseResponse getAllCommentInPost(@PathVariable(name = "postId")String pId){
-        return new ResponseObject(HttpStatus.OK.value(),commentService.findCommentByIdPost(pId));
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),commentService.findCommentByIdPost(pId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
     @PostMapping("/comment")
     public BaseResponse addCommentInPost(@RequestBody Comment comment){
-        return new ResponseMessage(HttpStatus.OK.value(),commentService.addCommentInPost(comment));
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),commentService.addCommentInPost(comment));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
     @PostMapping
     public BaseResponse postNewPost(@RequestBody Post post){
-        return new ResponseMessage(HttpStatus.OK.value(),postService.postNewPost(post));
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),postService.postNewPost(post));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
     }
     @DeleteMapping("{postId}/delete")
-    public BaseResponse postNewPost(@PathVariable(name = "postId")String pId){
+    public BaseResponse deletePost(@PathVariable(name = "postId")String pId){
         try{
             return new ResponseMessage(HttpStatus.OK.value(),postService.deletePost(pId));
         }catch (Exception e){

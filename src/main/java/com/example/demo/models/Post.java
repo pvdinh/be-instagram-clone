@@ -14,18 +14,23 @@ public class Post {
     private String userId;
     private long dateCreated;
     private List<String> likes;
+    private String type;
+    private String videoPath;
 
     public Post() {
         super();
     }
 
-    public Post(String caption, String imagePath, String tags, String userId, long dateCreated, List<String> likes) {
+    public Post(String id, String caption, String imagePath, String tags, String userId, long dateCreated, List<String> likes, String type, String videoPath) {
+        this.id = id;
         this.caption = caption;
         this.imagePath = imagePath;
         this.tags = tags;
         this.userId = userId;
         this.dateCreated = dateCreated;
         this.likes = likes;
+        this.type = type;
+        this.videoPath = videoPath;
     }
 
     public String getId() {
@@ -82,5 +87,21 @@ public class Post {
 
     public void setLikes(List<String> likes) {
         this.likes = likes;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
     }
 }

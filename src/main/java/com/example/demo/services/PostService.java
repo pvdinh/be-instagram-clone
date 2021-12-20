@@ -71,8 +71,12 @@ public class PostService {
             });
         });
         postInformations.sort(new SortClassCustom.PostByDateCreate());
-        List<PostInformation> postInformations2 = postInformations.subList(page*size,(page*size) + size);
-        return postInformations2;
+        if(postInformations.size() < size && page < 1){
+            return postInformations.subList(0,postInformations.size());
+        }
+        else if(postInformations.size() < size && page >= 1){
+            return Collections.emptyList();
+        }else return postInformations.subList(page*size,(page*size) + size);
     }
 
     public String like(String uId, String pId) {
