@@ -20,22 +20,38 @@ public class FollowController {
 
     @GetMapping
     public BaseResponse findFollowByUserCurrent(){
-        return new ResponseData(HttpStatus.OK.value(),followService.findFollowByUserCurrent());
+        try{
+            return new ResponseData(HttpStatus.OK.value(),followService.findFollowByUserCurrent());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
     @GetMapping("/suggestions")
     public BaseResponse suggestionsToFollow(){
-        return new ResponseData(HttpStatus.OK.value(),followService.suggestionsToFollow());
+        try{
+            return new ResponseData(HttpStatus.OK.value(),followService.suggestionsToFollow());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
     @PostMapping("/{userFollowingId}/begin")
     public BaseResponse beginFollowing(@PathVariable(name = "userFollowingId") String userFollowingId){
-        return new ResponseMessage(HttpStatus.OK.value(),followService.beginFollowing(userFollowingId));
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),followService.beginFollowing(userFollowingId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
     @DeleteMapping("/{userFollowingId}/end")
     public BaseResponse endFollowing(@PathVariable(name = "userFollowingId") String userFollowingId){
-        return new ResponseMessage(HttpStatus.OK.value(),followService.endFollowing(userFollowingId));
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),followService.endFollowing(userFollowingId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
 }

@@ -51,15 +51,35 @@ public class UserAccountService implements UserDetailsService {
         }
     }
     public boolean validatePhone(String s){
-        UserAccount userAccount = userAccountRepository.findUserAccountByPhoneNumber(s);
-        return userAccount!= null ? true : false;
+        if(isNumeric(s)){
+            UserAccount userAccount = userAccountRepository.findUserAccountByPhoneNumber(s);
+            return userAccount!= null ? true : false;
+        }else {
+            return true;
+        }
     }
     public boolean validateEmail(String s){
-        UserAccount userAccount = userAccountRepository.findUserAccountByEmail(s);
-        return userAccount!= null ? true : false;
+        try {
+            UserAccount userAccount = userAccountRepository.findUserAccountByEmail(s);
+            return userAccount!= null ? true : false;
+        }catch (Exception e){
+            return true;
+        }
     }
     public boolean validateUsername(String s){
-        UserAccount userAccount = userAccountRepository.findUserAccountByUsername(s);
-        return userAccount!= null ? true : false;
+        try {
+            UserAccount userAccount = userAccountRepository.findUserAccountByUsername(s);
+            return userAccount!= null ? true : false;
+        }catch (Exception e){
+            return true;
+        }
+    }
+    public static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
     }
 }

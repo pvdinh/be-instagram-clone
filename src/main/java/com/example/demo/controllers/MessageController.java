@@ -18,22 +18,38 @@ public class MessageController {
 
     @GetMapping
     public BaseResponse findAll(){
-        return new ResponseData(HttpStatus.OK.value(),messageService.findAllMessage());
+        try{
+            return new ResponseData(HttpStatus.OK.value(),messageService.findAllMessage());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
     @GetMapping("/sender")
     public BaseResponse findAllBySender(){
-        return new ResponseData(HttpStatus.OK.value(),messageService.findAllMessageBySender());
+        try{
+            return new ResponseData(HttpStatus.OK.value(),messageService.findAllMessageBySender());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
     @GetMapping("/{receiver}/receiver")
     public BaseResponse findAllBySenderAndReceiver(@PathVariable(name = "receiver") String receiver){
-        return new ResponseObject<>(HttpStatus.OK.value(),messageService.findAllMessageBySenderAndReceiver(receiver));
+        try{
+            return new ResponseObject<>(HttpStatus.OK.value(),messageService.findAllMessageBySenderAndReceiver(receiver));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
     @PostMapping
     public BaseResponse postMessage(@RequestBody Message message){
-        return new ResponseMessage(HttpStatus.OK.value(),messageService.postMessage(message));
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),messageService.postMessage(message));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 
     @PostMapping("/{search}/suggested")

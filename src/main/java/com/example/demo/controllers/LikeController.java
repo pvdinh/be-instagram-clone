@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
+import com.example.demo.response.ResponseMessage;
 import com.example.demo.services.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,10 @@ public class LikeController {
 
     @GetMapping("/{postId}")
     public BaseResponse getListUserLikedPost(@PathVariable(name = "postId") String postId){
-        return new ResponseData(HttpStatus.OK.value(),likeService.getListUserLikedPost(postId));
+        try{
+            return new ResponseData(HttpStatus.OK.value(),likeService.getListUserLikedPost(postId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
     }
 }
