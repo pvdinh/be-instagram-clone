@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.models.Follow;
 import com.example.demo.models.UserAccountSetting;
+import com.example.demo.models.activity.Activity;
 import com.example.demo.repository.FollowRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PrimitiveIterator;
 
 @Service
 public class FollowService {
@@ -18,6 +20,8 @@ public class FollowService {
     private UserAccountService userAccountService;
     @Autowired
     private UserAccountSettingRepository userAccountSettingRepository;
+    @Autowired
+    private ActivityService activityService;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -41,6 +45,8 @@ public class FollowService {
         try{
             followRepository.insert(new Follow("",userAccountService.getUID(),userFollowingId,System.currentTimeMillis()));
             updateFollow(userFollowingId);
+            //thêm vào activity
+            activityService.insert(new Activity(userAccountService.getUID(),userFollowingId,"","follow",0,System.currentTimeMillis()));
             return SUCCESS;
         }catch (Exception e){
             System.out.println("Duplicate");
@@ -51,6 +57,9 @@ public class FollowService {
         try{
             Follow follow=followRepository.findFollowsByUserCurrentAndUserFollowing(userAccountService.getUID(),userFollowingId);
             followRepository.delete(followRepository.findFollowsByUserCurrentAndUserFollowing(userAccountService.getUID(),userFollowingId));
+            //xoá khỏi activity
+            Activity activity = activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(userAccountService.getUID(),userFollowingId,"follow");
+            activityService.delete(activity);
             updateFollow(userFollowingId);
             return SUCCESS;
         }catch (Exception e){
