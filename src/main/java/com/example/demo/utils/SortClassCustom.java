@@ -1,5 +1,6 @@
 package com.example.demo.utils;
 
+import com.example.demo.models.Comment;
 import com.example.demo.models.Like;
 import com.example.demo.models.Post;
 import com.example.demo.models.PostInformation;
@@ -19,6 +20,13 @@ public class SortClassCustom {
         @Override
         public int compare(Like o1, Like o2) {
             return Long.compare(o2.getDateLiked(), o1.getDateLiked());
+        }
+    }
+
+    public static class LikeByDateCommented implements Comparator<Comment> {
+        @Override
+        public int compare(Comment o1, Comment o2) {
+            return Long.compare(o2.getDateCommented(),o1.getDateCommented());
         }
     }
 
