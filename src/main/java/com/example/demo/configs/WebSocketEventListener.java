@@ -15,7 +15,7 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-
+        System.out.println("disconnect");
     }
 
 }
