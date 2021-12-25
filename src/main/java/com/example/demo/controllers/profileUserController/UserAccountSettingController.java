@@ -78,6 +78,15 @@ public class UserAccountSettingController {
         }
     }
 
+    @PostMapping("/change-profile-photo")
+    public BaseResponse changeProfilePhoto(@RequestBody HashMap<String,String> data){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),userAccountSettingService.changeProfilePhoto(data));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
     @GetMapping("/{username}/get-saved-post")
     public BaseResponse getSavedPost(@PathVariable(name = "username") String username){
         try{
