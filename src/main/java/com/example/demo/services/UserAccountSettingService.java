@@ -177,4 +177,20 @@ public class UserAccountSettingService {
         }
     }
 
+    public String changeProfilePhoto(HashMap<String, String> data) {
+        String profilePhoto = data.get("profilePhoto");
+        try {
+            UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(userAccountService.getUID());
+            if(userAccountSetting != null){
+                userAccountSetting.setProfilePhoto(profilePhoto);
+                userAccountSettingRepository.save(userAccountSetting);
+                return SUCCESS;
+            }else {
+                return FAIL;
+            }
+        } catch (Exception e) {
+            return FAIL;
+        }
+    }
+
 }
