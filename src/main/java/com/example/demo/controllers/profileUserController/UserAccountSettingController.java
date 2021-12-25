@@ -6,7 +6,9 @@ import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
 import com.example.demo.response.ResponseMessage;
 import com.example.demo.response.ResponseObject;
+import com.example.demo.services.FollowService;
 import com.example.demo.services.SavedPostService;
+import com.example.demo.services.StoryService;
 import com.example.demo.services.UserAccountSettingService;
 import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,10 @@ public class UserAccountSettingController {
     private UserAccountSettingService userAccountSettingService;
     @Autowired
     private SavedPostService savedPostService;
+    @Autowired
+    private FollowService followService;
+    @Autowired
+    private StoryService storyService;
 
     @GetMapping("/{username}")
     public BaseResponse findUserAccountSettingByUsername(@PathVariable(name = "username") String username) {
@@ -80,6 +86,24 @@ public class UserAccountSettingController {
             }else {
                 return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
             }
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/{userFollowingId}/checkFollow")
+    public BaseResponse checkFollow(@PathVariable(name = "userFollowingId") String userFollowingId){
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),followService.checkFollow(userFollowingId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/{userId}/checkStory")
+    public BaseResponse checkStory(@PathVariable(name = "userId") String userId){
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),storyService.checkStory(userId));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }

@@ -93,4 +93,16 @@ public class FollowService {
         return userAccountSettings.size() < 5 ? userAccountSettings : userAccountSettings.subList(0,5);
     }
 
+    public boolean checkFollow(String uFId){
+        try {
+            Follow follow = followRepository.findFollowsByUserCurrentAndUserFollowing(userAccountService.getUID(),uFId);
+            if(follow != null){
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
 }

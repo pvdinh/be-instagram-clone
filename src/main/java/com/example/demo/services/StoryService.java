@@ -82,4 +82,21 @@ public class StoryService {
             return FAIL;
         }
     }
+
+    public boolean checkStory(String uFId){
+        try{
+            List<Story> stories = new ArrayList<>();
+            storyRepository.findStoryByIdUser(uFId).forEach(story -> {
+                if (story.getDateEnd() > System.currentTimeMillis()){
+                    stories.add(story);
+                }
+            });
+            if(stories.size() > 0){
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
 }
