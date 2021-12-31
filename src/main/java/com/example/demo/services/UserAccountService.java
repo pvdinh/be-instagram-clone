@@ -6,12 +6,15 @@ import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.utils.UsernameFromJWT;
 import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserAccountService implements UserDetailsService {
@@ -23,11 +26,12 @@ public class UserAccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         UserAccount userAccount = userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(s,s,s,s);
+        List<SimpleGrantedAuthority> grantedAuthorityList = userAccount.getRoles().stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
         if(userAccount != null){
             return org.springframework.security.core.userdetails.User
                     .withUsername(userAccount.getUsername())
                     .password("{noop}"+userAccount.getPassword())
-                    .authorities(Collections.emptyList())
+                    .authorities(grantedAuthorityList)
                     .build();
         }else throw new NullPointerException("NOT FOUND : " + s);
     }

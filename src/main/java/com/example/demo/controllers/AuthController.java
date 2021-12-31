@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -25,6 +28,7 @@ public class AuthController {
     public BaseResponse register(@RequestBody UserAccount userAccount) {
         userAccount.setPassword(ConvertSHA1.convertSHA1(userAccount.getPassword()));
         userAccount.setAuthProvider(AuthProvider.local);
+        userAccount.setRoles(new ArrayList<String>(Collections.singleton("ROLE_USER")));
         String resMess = userAccountService.addUserAccount(userAccount);
         if (resMess.equalsIgnoreCase("success")) {
             UserAccount uAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(userAccount.getUsername());

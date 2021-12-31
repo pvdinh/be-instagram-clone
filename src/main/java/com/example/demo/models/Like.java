@@ -1,9 +1,11 @@
 package com.example.demo.models;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
+@CompoundIndex(name = "idUser_idPost",def = "{'idUser': 1 , 'idPost' : 1}", unique = true)
 public class Like {
     @Id
     private String id;

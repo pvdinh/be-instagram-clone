@@ -17,6 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -39,7 +41,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 ,customOauth2User.getName()
                 , ConvertSHA1.convertSHA1(customOauth2User.getId())
                 ,customOauth2User.getEmail(),null
-                , AuthProvider.facebook);
+                , AuthProvider.facebook, new ArrayList<String>(Collections.singleton("ROLE_USER")));
         userAccountService.addUserAccount(userAccount);
 
         UserAccountSetting userAccountSetting = new UserAccountSetting(customOauth2User.getId()

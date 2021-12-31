@@ -20,7 +20,9 @@ public class PostWebSocketController {
     @MessageMapping("comment.allComment")
     @SendTo("/post/allComment")
     public Comment receiverComment(@Payload Comment comment){
-        commentService.addCommentInPost(comment);
+        if(comment.getIdPost() != null && comment.getIdUser() != null) {
+            commentService.addCommentInPost(comment);
+        }
         return comment;
     }
 }
