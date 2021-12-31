@@ -6,10 +6,7 @@ import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
 import com.example.demo.response.ResponseMessage;
 import com.example.demo.response.ResponseObject;
-import com.example.demo.services.FollowService;
-import com.example.demo.services.SavedPostService;
-import com.example.demo.services.StoryService;
-import com.example.demo.services.UserAccountSettingService;
+import com.example.demo.services.*;
 import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +26,8 @@ public class UserAccountSettingController {
     private FollowService followService;
     @Autowired
     private StoryService storyService;
+    @Autowired
+    private PostService postService;
 
     @GetMapping("/{username}")
     public BaseResponse findUserAccountSettingByUsername(@PathVariable(name = "username") String username) {
@@ -113,6 +112,15 @@ public class UserAccountSettingController {
     public BaseResponse checkStory(@PathVariable(name = "userId") String userId){
         try{
             return new ResponseObject(HttpStatus.OK.value(),storyService.checkStory(userId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/{username}/get-video")
+    public BaseResponse getPostVideo(@PathVariable(name = "username")String username,@RequestParam(name = "page")int page,@RequestParam(name = "size")int size){
+        try{
+            return new ResponseData(HttpStatus.OK.value(),postService.getPostVideo(username,page,size));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }

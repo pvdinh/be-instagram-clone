@@ -2,12 +2,16 @@ package com.example.demo.services;
 
 import com.example.demo.models.*;
 import com.example.demo.models.activity.Activity;
+import com.example.demo.models.profile.PostDetail;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
 import com.example.demo.utils.SortClassCustom;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +34,8 @@ public class PostService {
     private FollowService followService;
     @Autowired
     private ActivityService activityService;
+    @Autowired
+    private CommentService commentService;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -158,5 +164,24 @@ public class PostService {
         UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(userAccountService.getUID());
         userAccountSetting.setPosts(postRepository.findPostByUserId(userAccountService.getUID()).size());
         userAccountSettingRepository.save(userAccountSetting);
+    }
+
+    public List<PostDetail> getPostVideo(String username,int page,int size){
+        List<PostDetail> postDetails = new ArrayList<>();
+        try {
+            Pageable pageable = PageRequest.of(page,size, Sort.by("dateCreated").descending());
+            UserAccount userAccount = userAccountService.findUserAccountByUsername(username);
+            if(userAccount != null){
+                List<Post> posts = postRepository.findPostVideoByTypeAndUserId("video",userAccount.getId(),pageable);
+                posts.forEach(post -> {
+                    List<String> stringListLike = likeService.getListUserLikedPost(post.getId());
+                    int numberOfComments = commentService.findCommentByIdPost(post.getId()).size();
+                    postDetails.add(new PostDetail(post,numberOfComments,stringListLike));
+                });
+                return postDetails;
+            }else return postDetails;
+        }catch (Exception e) {
+            return postDetails;
+        }
     }
 }
