@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document
 public class UserAccount {
     @Id
@@ -16,18 +18,21 @@ public class UserAccount {
     @Indexed(unique = true)
     private String phoneNumber;
     private AuthProvider authProvider;
+    private String displayName;
+    private List<String> roles;
 
     public UserAccount() {
         super();
     }
 
-    public UserAccount(String id, String username, String password, String email, String phoneNumber, AuthProvider authProvider) {
+    public UserAccount(String id, String username, String password, String email, String phoneNumber, AuthProvider authProvider, List<String> role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.authProvider = authProvider;
+        this.roles=role;
     }
 
     public String getId() {
@@ -76,5 +81,21 @@ public class UserAccount {
 
     public void setAuthProvider(AuthProvider authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

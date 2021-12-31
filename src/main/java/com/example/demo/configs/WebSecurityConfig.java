@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +18,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserAccountService userAccountService;
@@ -37,9 +42,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     //config to ignoring antMatchers
+    //swagger config
     @Override
     public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
+        web.ignoring().antMatchers(
+                "/v2/api-docs",
+                "/v3/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/images/**",
+                "/configuration/security",
+                "/swagger-ui.html"
+        );
     }
 
     //config to filter antMatchers
@@ -47,7 +61,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
                 .antMatchers("/auth/**", "/oauth2/**").permitAll()
-                .antMatchers("/home").permitAll()
+                .antMatchers("/api/v1/home/**").hasAuthority("ROLE_USER")
+                .antMatchers(
+                        "/ws/**",
+                        "/webjars/**",
+                        "/inbox/public",
+                        "/app/chat.sendMessage",
+                        "/app/**").permitAll()
                 .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
