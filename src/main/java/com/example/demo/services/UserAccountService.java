@@ -44,6 +44,10 @@ public class UserAccountService implements UserDetailsService {
         return userAccountRepository.findUserAccountByUsername(s);
     }
 
+    public UserAccount findUserAccountById(String id){
+        return userAccountRepository.findUserAccountById(id);
+    }
+
     public String getUID(){
         return userAccountRepository.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(UsernameFromJWT.get(),UsernameFromJWT.get(),UsernameFromJWT.get(),UsernameFromJWT.get()).getId();
     }
