@@ -42,13 +42,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 , ConvertSHA1.convertSHA1(customOauth2User.getId())
                 ,customOauth2User.getEmail(),null
                 , AuthProvider.facebook, new ArrayList<String>(Collections.singleton("ROLE_USER")));
-        userAccountService.addUserAccount(userAccount);
-
-        UserAccountSetting userAccountSetting = new UserAccountSetting(customOauth2User.getId()
-                ,customOauth2User.getName(),"",0,0,0
-                ,customOauth2User.getPicture()
-                ,customOauth2User.getName(),"");
-        userAccountSettingService.addUserAccountSetting(userAccountSetting);
+        UserAccount uc = userAccountService.findUserAccountById(customOauth2User.getId());
+        if(uc == null){
+            userAccountService.addUserAccount(userAccount);
+            UserAccountSetting userAccountSetting = new UserAccountSetting(customOauth2User.getId()
+                    ,customOauth2User.getName(),"",0,0,0
+                    ,customOauth2User.getPicture()
+                    ,customOauth2User.getName(),"");
+            userAccountSettingService.addUserAccountSetting(userAccountSetting);
+        }
 
         if (response.isCommitted()) {
             System.out.println("Response has already been committed. Unable to redirect to " + targetUrl);
