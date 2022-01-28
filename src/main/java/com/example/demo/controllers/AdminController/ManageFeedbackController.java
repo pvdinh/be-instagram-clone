@@ -20,6 +20,7 @@ public class ManageFeedbackController {
     @Autowired
     private FeedbackService feedbackService;
 
+    //http://localhost:8080/api/v1/admin/manage-feedback
     @GetMapping
     public BaseResponse findAllPageable(@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
         try{
@@ -32,6 +33,7 @@ public class ManageFeedbackController {
         }
     }
 
+    //http://localhost:8080/api/v1/admin/manage-feedback/{search}/search
     @GetMapping("/{search}/search")
     public BaseResponse findContainsByIdUserOrSubjectOrContent(@PathVariable(name = "search") String search, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
         try{

@@ -38,6 +38,7 @@ public class StoryService {
         //lấy danh sách following và userAccountSetting
         List<Follow> follows = followService.findFollowByUserCurrent();
         follows.forEach(follow -> {
+            UserAccountSetting userAccountSetting = userAccountSettingService.findUserAccountSettingById(follow.getUserFollowing());
             userAccountSettings.add(userAccountSettingService.findUserAccountSettingById(follow.getUserFollowing()));
         });
         //--------------------------------------------
