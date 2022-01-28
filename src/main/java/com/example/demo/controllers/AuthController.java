@@ -33,7 +33,7 @@ public class AuthController {
         if (resMess.equalsIgnoreCase("success")) {
             UserAccount uAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(userAccount.getUsername());
             UserAccountSetting userAccountSetting = new UserAccountSetting(uAccount.getId(), userAccount.getDisplayName()
-                    , "", 0, 0, 0, "https://res.cloudinary.com/dinhpv/image/upload/v1627739587/instargram-clone/avt_hcfwtt.png"
+                    , "", 1, 1, 0, "https://res.cloudinary.com/dinhpv/image/upload/v1627739587/instargram-clone/avt_hcfwtt.png"
                     , uAccount.getUsername(), "");
             return new ResponseMessage(HttpStatus.OK.value(), userAccountSettingService.addUserAccountSetting(userAccountSetting));
         } else {

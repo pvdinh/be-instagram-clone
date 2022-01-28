@@ -6,12 +6,15 @@ import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.utils.UsernameFromJWT;
 import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -92,6 +95,27 @@ public class UserAccountService implements UserDetailsService {
             return true;
         } catch(NumberFormatException e){
             return false;
+        }
+    }
+
+    public List<UserAccount> findAllPageable(int page,int size){
+        List<UserAccount> userAccounts = new ArrayList<>();
+        try{
+            Pageable pageable = PageRequest.of(page,size);
+            userAccounts = userAccountRepository.findAll(pageable).getContent();
+            return userAccounts;
+        }catch (Exception e){
+            return userAccounts;
+        }
+    }
+
+    public List<UserAccount> findAll(){
+        List<UserAccount> userAccounts = new ArrayList<>();
+        try{
+            userAccounts = userAccountRepository.findAll();
+            return userAccounts;
+        }catch (Exception e){
+            return userAccounts;
         }
     }
 }

@@ -20,6 +20,10 @@ public class ReportService {
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
 
+    public List<Report> findAll(){
+        return reportRepository.findAll();
+    }
+
     public List<Report> findAllPageable(int page,int size){
         List<Report> reports = new ArrayList<>();
         try {
