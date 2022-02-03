@@ -40,4 +40,13 @@ public class LikeService {
         });
         return userAccountSettings;
     }
+
+    public List<UserAccountSetting> getAllUserLikedPost(String pId){
+        List<UserAccountSetting> userAccountSettings = new ArrayList<>();
+        List<Like> likes = likeRepository.findLikeByIdPost(pId);
+        likes.forEach(like -> {
+            userAccountSettings.add(userAccountSettingRepository.findUserAccountSettingById(like.getIdUser()));
+        });
+        return userAccountSettings;
+    }
 }
