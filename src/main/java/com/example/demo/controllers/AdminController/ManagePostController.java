@@ -89,7 +89,7 @@ public class ManagePostController {
 
     //http://localhost:8080/api/v1/admin/manage-post/{search}/search
     @GetMapping("/{search}/search")
-    public BaseResponse findContainsByIdUserOrSubjectOrContent(@PathVariable(name = "search") String search, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
+    public BaseResponse findContainsByUserIdOrIdPageable(@PathVariable(name = "search") String search, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
         try{
             int currentPage = page.orElse(0);
             int pageSize = size.orElse(10);

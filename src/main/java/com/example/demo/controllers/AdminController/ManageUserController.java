@@ -26,33 +26,34 @@ public class ManageUserController {
 
     //http://localhost:8080/api/v1/admin/manage-user
     @GetMapping
-    public BaseResponse findAllPageable(@RequestParam(name = "page")Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
-        try{
+    public BaseResponse findAllPageable(@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
             int currentPage = page.orElse(0);
-            int pageSize= page.orElse(10);
-            List<UserAccount> userAccounts = userAccountService.findAllPageable(currentPage,pageSize);
-            return new ResponseData(HttpStatus.OK.value(),userAccounts,userAccountService.findAll().size());
-        }catch (Exception e){
+            int pageSize = size.orElse(10);
+            return new ResponseData<>(HttpStatus.OK.value(), userAccountService.findAllPageable(currentPage, pageSize), userAccountService.findAll().size());
+        } catch (Exception e) {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
         }
     }
 
-    //http://localhost:8080/api/v1/admin/manage-user/{uId}
-    @GetMapping("/{uId}")
-    public BaseResponse findById(@PathVariable(name = "uId") String uId){
-        try{
-            return new ResponseObject(HttpStatus.OK.value(),userAccountService.findUserAccountById(uId));
-        }catch (Exception e){
+    //http://localhost:8080/api/v1/admin/manage-user/{search}/search
+    @GetMapping("/{search}/search")
+    public BaseResponse findContainsByIdOrUsernameOrDisplayNamePageable(@PathVariable(name = "search") String search, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(), userAccountService.findContainsByIdOrUsernameOrDisplayNamePageable(search, currentPage, pageSize), userAccountService.findContainsByIdOrUsernameOrDisplayName(search).size());
+        } catch (Exception e) {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
         }
     }
 
     //http://localhost:8080/api/v1/admin/manage-user/{uId}/user-account-setting
     @GetMapping("/{uId}/user-account-setting")
-    public BaseResponse findUserAccountSettingById(@PathVariable(name = "uId") String uId){
-        try{
-            return new ResponseObject(HttpStatus.OK.value(),userAccountSettingService.findUserAccountSettingById(uId));
-        }catch (Exception e){
+    public BaseResponse findUserAccountSettingById(@PathVariable(name = "uId") String uId) {
+        try {
+            return new ResponseObject(HttpStatus.OK.value(), userAccountSettingService.findUserAccountSettingById(uId));
+        } catch (Exception e) {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
         }
     }
