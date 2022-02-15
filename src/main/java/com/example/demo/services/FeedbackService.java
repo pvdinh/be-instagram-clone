@@ -67,4 +67,35 @@ public class FeedbackService {
             return FAIL;
         }
     }
+
+    public String delete(String id){
+        try {
+            feedbackRepository.deleteById(id);
+            return SUCCESS;
+        }catch (Exception e){
+            return FAIL;
+        }
+    }
+
+    public List<Feedback> filterByTime(long start,long end){
+        List<Feedback> feedbacks = new ArrayList<>();
+        try {
+            feedbacks = feedbackRepository.filterByTime(start,end);
+            return feedbacks;
+        }catch (Exception e){
+            return feedbacks;
+        }
+    }
+
+
+    public List<Feedback> filterByTimePageable(long start,long end,int page,int size){
+        List<Feedback> feedbacks = new ArrayList<>();
+        try {
+            Pageable pageable=PageRequest.of(page,size, Sort.by("dateCreated").descending());
+            feedbacks = feedbackRepository.filterByTime(start,end, pageable);
+            return feedbacks;
+        }catch (Exception e){
+            return feedbacks;
+        }
+    }
 }

@@ -22,27 +22,51 @@ public class ManageFeedbackController {
 
     //http://localhost:8080/api/v1/admin/manage-feedback
     @GetMapping
-    public BaseResponse findAllPageable(@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
-        try{
+    public BaseResponse findAllPageable(@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
             int currentPage = page.orElse(0);
             int pageSize = size.orElse(10);
-            List<Feedback> feedbacks = feedbackService.findAllPageable(currentPage,pageSize);
-            return new ResponseData(HttpStatus.OK.value(),feedbacks,feedbackService.findAll().size());
-        }catch (Exception e){
+            List<Feedback> feedbacks = feedbackService.findAllPageable(currentPage, pageSize);
+            return new ResponseData(HttpStatus.OK.value(), feedbacks, feedbackService.findAll().size());
+        } catch (Exception e) {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
         }
     }
 
     //http://localhost:8080/api/v1/admin/manage-feedback/{search}/search
     @GetMapping("/{search}/search")
-    public BaseResponse findContainsByIdUserOrSubjectOrContent(@PathVariable(name = "search") String search, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
-        try{
+    public BaseResponse findContainsByIdUserOrSubjectOrContent(@PathVariable(name = "search") String search, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
             int currentPage = page.orElse(0);
             int pageSize = size.orElse(10);
-            List<Feedback> feedbacks = feedbackService.findContainsByIdUserOrSubjectOrContentPageable(search,currentPage,pageSize);
-            return new ResponseData(HttpStatus.OK.value(),feedbacks,feedbackService.findContainsByIdUserOrSubjectOrContent(search).size());
-        }catch (Exception e){
+            List<Feedback> feedbacks = feedbackService.findContainsByIdUserOrSubjectOrContentPageable(search, currentPage, pageSize);
+            return new ResponseData(HttpStatus.OK.value(), feedbacks, feedbackService.findContainsByIdUserOrSubjectOrContent(search).size());
+        } catch (Exception e) {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
         }
     }
+
+    //http://localhost:8080/api/v1/admin/manage-feedback/{id}/delete
+    @DeleteMapping("/{id}/delete")
+    public BaseResponse delete(@PathVariable(name = "id") String id) {
+        try {
+            return new ResponseMessage(HttpStatus.OK.value(), feedbackService.delete(id));
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
+
+    //http://localhost:8080/api/v1/admin/manage-feedback/filter
+    @GetMapping("/filter")
+    public BaseResponse filterByTime(@RequestParam(name = "start") String start, @RequestParam(name = "end") String end, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(), feedbackService.filterByTimePageable(Long.parseLong(start), Long.parseLong(end), currentPage, pageSize), feedbackService.filterByTime(Long.parseLong(start), Long.parseLong(end)).size());
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
 }
