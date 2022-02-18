@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.models.*;
 import com.example.demo.models.activity.Activity;
+import com.example.demo.models.blockPost.BlockPost;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.repository.*;
 import com.example.demo.utils.SortClassCustom;
@@ -37,6 +38,8 @@ public class PostService {
     private CommentService commentService;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private BlockPostRepository blockPostRepository;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -253,6 +256,48 @@ public class PostService {
             } else return postDetails;
         } catch (Exception e) {
             return postDetails;
+        }
+    }
+
+    //thuực hiện khoá 1 bài đăng (sau 30 ngày tự động xoá)
+    public String blockPost(String pId){
+        try {
+            Post post = postRepository.findPostById(pId);
+            //chuyển link ảnh(video) sang bảng BlockPost để có thể khôi phục lại
+            BlockPost blockPost = new BlockPost(pId,post.getImagePath(),post.getVideoPath(),System.currentTimeMillis());
+            blockPostRepository.insert(blockPost);
+            //xoá link video, thay đổi link ảnh
+            post.setImagePath("https://res.cloudinary.com/dinhpv/image/upload/v1644923908/instargram-clone/eyes-dont-see_z5xppf.jpg");
+            post.setVideoPath("");
+            postRepository.save(post);
+            return SUCCESS;
+        }catch (Exception e){
+            return FAIL;
+        }
+    }
+
+    public String unBlockPost(String pId){
+        try {
+            BlockPost blockPost = blockPostRepository.findByPostId(pId);
+            Post post = postRepository.findPostById(pId);
+            //cập nhật lại link video,link ảnh đã block
+            post.setImagePath(blockPost.getImagePath());
+            post.setVideoPath(blockPost.getVideoPath());
+            postRepository.save(post);
+            //
+            blockPostRepository.delete(blockPost);
+            return SUCCESS;
+        }catch (Exception e){
+            return FAIL;
+        }
+    }
+
+    public BlockPost getPostBlock(String pId){
+        BlockPost blockPost = new BlockPost();
+        try {
+            return blockPostRepository.findByPostId(pId);
+        }catch (Exception e){
+            return blockPost;
         }
     }
 }

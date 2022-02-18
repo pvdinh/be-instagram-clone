@@ -100,4 +100,34 @@ public class ManagePostController {
         }
     }
 
+    //http://localhost:8080/api/v1/admin/manage-post/{postId}/block
+    @PostMapping("{postId}/block")
+    public BaseResponse blockPost(@PathVariable(name = "postId") String postId){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),postService.blockPost(postId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
+    //http://localhost:8080/api/v1/admin/manage-post/{postId}/unblock
+    @PostMapping("{postId}/unblock")
+    public BaseResponse unBlockPost(@PathVariable(name = "postId") String postId){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),postService.unBlockPost(postId));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
+    //http://localhost:8080/api/v1/admin/manage-post/block
+    @GetMapping("/block")
+    public BaseResponse getPostBlock(@RequestParam(name = "id") String id){
+        try {
+            return new ResponseObject(HttpStatus.OK.value(),postService.getPostBlock(id));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
 }
