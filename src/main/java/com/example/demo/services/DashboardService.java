@@ -51,7 +51,7 @@ public class DashboardService {
     }
 
     public HashMap<Object,Object> chartData(int year){
-        HashMap<Object,Object> objects = initChart();
+        HashMap<Object,Object> objects = new HashMap<>();
         try {
             MongoClient mongoClient = new MongoClient(
                     new MongoClientURI(
@@ -59,6 +59,8 @@ public class DashboardService {
                     )
             );
             MongoDatabase database = mongoClient.getDatabase("instagram-clone");
+            //post
+            HashMap<Object,Object> hashMapP = initChart();
             MongoCollection<Document> collection = database.getCollection("post");
 
             AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$addFields",
@@ -76,8 +78,33 @@ public class DashboardService {
             MongoCursor<Document> mongoCursor = result.iterator();
             while (mongoCursor.hasNext()){
                 Document next = mongoCursor.next();
-                objects.put(next.get("_id"),next.get("count"));
+                hashMapP.put(next.get("_id"),next.get("count"));
             }
+
+            //userAccountSetting
+            HashMap<Object,Object> hashMapUAS = initChart();
+            MongoCollection<Document> collectionUAS = database.getCollection("userAccountSetting");
+
+            AggregateIterable<Document> resultUAS = collectionUAS.aggregate(Arrays.asList(new Document("$addFields",
+                            new Document("year",
+                                    new Document("$year",
+                                            new Document("$toDate", "$dateCreated")))),
+                    new Document("$match",
+                            new Document("year", year)),
+                    new Document("$group",
+                            new Document("_id",
+                                    new Document("$month",
+                                            new Document("$toDate", "$dateCreated")))
+                                    .append("count",
+                                            new Document("$sum", 1L)))));
+            MongoCursor<Document> mongoCursorUAS = resultUAS.iterator();
+            while (mongoCursorUAS.hasNext()){
+                Document next = mongoCursorUAS.next();
+                hashMapUAS.put(next.get("_id"),next.get("count"));
+            }
+            //
+            objects.put("user",hashMapUAS);
+            objects.put("post",hashMapP);
             return objects;
         }catch (Exception e){
             return objects;

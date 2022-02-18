@@ -41,7 +41,7 @@ public class DashboardController {
         }
     }
 
-    //http://localhost:8080/api/v1/admin/year/chart-data
+    //http://localhost:8080/api/v1/admin/{year}/chart-data
     @GetMapping("/{year}/chart-data")
     public BaseResponse chartData(@PathVariable(name = "year") String year) {
         try {
