@@ -61,11 +61,7 @@ public class TokenAuthentication {
         }
         String token = request.getHeader(HEADER_STRING);
         if (token != null) {
-            String username = Jwts.parser()
-                    .setSigningKey(SECRET)
-                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                    .getBody()
-                    .getSubject();
+            String username = getUsernameFromToken(token);
             UserAccount userAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(username);
             List<GrantedAuthority> grantedAuthorities = userAccount.getRoles().stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
             return username != null && isTokenExpired(token) ?
@@ -73,6 +69,15 @@ public class TokenAuthentication {
                     null;
         }
         return null;
+    }
+
+    public static String getUsernameFromToken(String token){
+        String username = Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                .getBody()
+                .getSubject();
+        return username;
     }
 
     public static Boolean isTokenExpired(String token) {

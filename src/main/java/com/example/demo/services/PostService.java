@@ -175,7 +175,7 @@ public class PostService {
             postRepository.save(post);
             //Thêm vào activity
             if (!uId.equals(post.getUserId())) {
-                activityService.insert(new Activity(userAccountService.getUID(), post.getUserId(), post.getId(), "like", 0, System.currentTimeMillis()));
+                activityService.insert(new Activity(userAccountService.getUID(), post.getUserId(), post.getId(), "like", 0, System.currentTimeMillis()),userAccountService.getUID());
             }
             return SUCCESS;
         } else {
@@ -193,7 +193,7 @@ public class PostService {
             //xoá khỏi activity
             if (uId != post.getUserId()) {
                 Activity activity = activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(userAccountService.getUID(), post.getUserId(), "like", post.getId());
-                activityService.delete(activity);
+                activityService.delete(activity,userAccountService.getUID());
             }
             return SUCCESS;
         } else {

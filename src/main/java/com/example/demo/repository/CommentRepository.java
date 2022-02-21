@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CommentRepository extends MongoRepository<Comment,String> {
     List<Comment> findCommentByIdPost(String pId);
+    List<Comment> findCommentByIdUserAndIdPost(String uId,String pId);
 }

@@ -1,5 +1,6 @@
 package com.example.demo.controllers.AdminController;
 
+import com.example.demo.models.Comment;
 import com.example.demo.models.Post;
 import com.example.demo.models.report.Report;
 import com.example.demo.response.BaseResponse;
@@ -129,5 +130,16 @@ public class ManagePostController {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
         }
     }
+
+    //http://localhost:8080/api/v1/admin/manage-post/delete-comment
+    @DeleteMapping("/{id}/delete-comment")
+    public BaseResponse deleteComment(@PathVariable(name = "id") String id){
+        try {
+            return new ResponseObject(HttpStatus.OK.value(),commentService.deleteComment(id));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
 
 }

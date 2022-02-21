@@ -61,7 +61,7 @@ public class ActivityService {
         return activityRepository.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(idCurrentUser,idInteractUser,typeActivity,idPost);
     }
 
-    public String insert(Activity activity){
+    public String insert(Activity activity,String idCurrentUser){
         try {
             Activity ac = new Activity();
             if(activity.getIdPost() != null){
@@ -69,18 +69,21 @@ public class ActivityService {
             }else {
                 ac = findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(activity.getIdCurrentUser(),activity.getIdInteractUser(),activity.getTypeActivity());
             }
-            if(ac == null && authenticationCurrentUser.checkCurrentUser(activity.getIdCurrentUser())){
+            if(ac == null && idCurrentUser.equals(activity.getIdCurrentUser())){
                 activityRepository.insert(activity);
-            }else return FAIL;
+            }else {
+                ac.setDateActivity(System.currentTimeMillis());
+                activityRepository.save(ac);
+            };
             return SUCCESS;
         }catch (Exception e){
             return FAIL;
         }
     }
 
-    public String delete(Activity activity){
+    public String delete(Activity activity,String idCurrentUser){
         try {
-            if(authenticationCurrentUser.checkCurrentUser(activity.getIdCurrentUser())){
+            if(idCurrentUser.equals(activity.getIdInteractUser())){
                 activityRepository.delete(activity);
             }else return FAIL;
             return SUCCESS;

@@ -7,6 +7,7 @@ import com.example.demo.repository.ReportRepository;
 import com.example.demo.repository.UserAccountRepository;
 import com.mongodb.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -50,18 +51,15 @@ public class DashboardService {
         }
     }
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     public HashMap<Object,Object> chartData(int year){
         HashMap<Object,Object> objects = new HashMap<>();
         try {
-            MongoClient mongoClient = new MongoClient(
-                    new MongoClientURI(
-                            "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB+Compass&directConnection=true&ssl=false"
-                    )
-            );
-            MongoDatabase database = mongoClient.getDatabase("instagram-clone");
             //post
             HashMap<Object,Object> hashMapP = initChart();
-            MongoCollection<Document> collection = database.getCollection("post");
+            MongoCollection<Document> collection = mongoTemplate.getCollection("post");
 
             AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$addFields",
                             new Document("year",
@@ -83,7 +81,7 @@ public class DashboardService {
 
             //userAccountSetting
             HashMap<Object,Object> hashMapUAS = initChart();
-            MongoCollection<Document> collectionUAS = database.getCollection("userAccountSetting");
+            MongoCollection<Document> collectionUAS = mongoTemplate.getCollection("userAccountSetting");
 
             AggregateIterable<Document> resultUAS = collectionUAS.aggregate(Arrays.asList(new Document("$addFields",
                             new Document("year",

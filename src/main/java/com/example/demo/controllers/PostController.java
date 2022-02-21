@@ -97,14 +97,14 @@ public class PostController {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
     }
-    @PostMapping("/comment")
-    public BaseResponse addCommentInPost(@RequestBody Comment comment){
-        try{
-            return new ResponseMessage(HttpStatus.OK.value(),commentService.addCommentInPost(comment));
-        }catch (Exception e){
-            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
-        }
-    }
+//    @PostMapping("/comment")
+//    public BaseResponse addCommentInPost(@RequestBody Comment comment){
+//        try{
+//            return new ResponseMessage(HttpStatus.OK.value(),commentService.addCommentInPost(comment));
+//        }catch (Exception e){
+//            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+//        }
+//    }
     @PostMapping
     public BaseResponse postNewPost(@RequestBody Post post){
         try{
