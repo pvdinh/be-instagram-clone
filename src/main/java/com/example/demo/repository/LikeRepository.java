@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface LikeRepository extends MongoRepository<Like,String> {
     List<Like> findLikeByIdPost(String idPost);
-    Like findLikeByIdUserAndIdPost(String idUser,String idPoss);
+    Like findLikeByIdUserAndIdPost(String idUser,String idPost);
     List<Like> findLikeByIdPost(String idPost,Pageable pageable);
 }

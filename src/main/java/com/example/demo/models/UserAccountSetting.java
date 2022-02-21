@@ -18,12 +18,13 @@ public class UserAccountSetting {
     @Indexed(unique = true)
     private String username;
     private String website;
+    private long dateCreated;
 
     public UserAccountSetting() {
         super();
     }
 
-    public UserAccountSetting(String id, String displayName, String description, int followers, int following, int posts, String profilePhoto, String username, String website) {
+    public UserAccountSetting(String id, String displayName, String description, int followers, int following, int posts, String profilePhoto, String username, String website, long dateCreated) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
@@ -33,6 +34,7 @@ public class UserAccountSetting {
         this.profilePhoto = profilePhoto;
         this.username = username.replace(" ", "_");
         this.website = website;
+        this.dateCreated = dateCreated;
     }
 
     public String getId() {
@@ -105,6 +107,14 @@ public class UserAccountSetting {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public long getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(long dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     @Override

@@ -46,9 +46,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         if(uc == null){
             userAccountService.addUserAccount(userAccount);
             UserAccountSetting userAccountSetting = new UserAccountSetting(customOauth2User.getId()
-                    ,customOauth2User.getName(),"",0,0,0
+                    ,customOauth2User.getName(),"",1,1,0
                     ,customOauth2User.getPicture()
-                    ,customOauth2User.getName(),"");
+                    ,customOauth2User.getName(),"",System.currentTimeMillis());
             userAccountSettingService.addUserAccountSetting(userAccountSetting);
         }
 

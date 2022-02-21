@@ -2,17 +2,23 @@ package com.example.demo.services;
 
 import com.example.demo.models.UserAccount;
 import com.example.demo.models.UserAccountSetting;
+import com.example.demo.models.adminModels.UserAccountProfile;
 import com.example.demo.repository.UserAccountRepository;
+import com.example.demo.repository.UserAccountSettingRepository;
 import com.example.demo.utils.UsernameFromJWT;
 import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +28,8 @@ public class UserAccountService implements UserDetailsService {
     private final String FAIL = "fail";
     @Autowired
     private UserAccountRepository userAccountRepository;
+    @Autowired
+    private UserAccountSettingRepository userAccountSettingRepository;
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
@@ -92,6 +100,60 @@ public class UserAccountService implements UserDetailsService {
             return true;
         } catch(NumberFormatException e){
             return false;
+        }
+    }
+
+    public List<UserAccountProfile> findAllPageable(int page, int size){
+        List<UserAccountProfile> userAccounts = new ArrayList<>();
+        try{
+            Pageable pageable = PageRequest.of(page,size);
+
+            List<UserAccount> accounts = userAccountRepository.findAll(pageable).getContent();
+
+
+            accounts.forEach(userAccount -> {
+                userAccounts.add(new UserAccountProfile(userAccount,userAccountSettingRepository.findUserAccountSettingById(userAccount.getId())));
+            });
+            return userAccounts;
+        }catch (Exception e){
+            return userAccounts;
+        }
+    }
+
+    public List<UserAccountProfile> findContainsByIdOrUsernameOrDisplayNamePageable(String search,int page, int size){
+        List<UserAccountProfile> userAccounts = new ArrayList<>();
+        try{
+            Pageable pageable = PageRequest.of(page,size);
+
+            List<UserAccount> accounts = userAccountRepository.findByIdContainsOrUsernameContainsOrDisplayNameContains(search,search,search,pageable);
+
+
+            accounts.forEach(userAccount -> {
+                userAccounts.add(new UserAccountProfile(userAccount,userAccountSettingRepository.findUserAccountSettingById(userAccount.getId())));
+            });
+            return userAccounts;
+        }catch (Exception e){
+            return userAccounts;
+        }
+    }
+
+    public List<UserAccount> findContainsByIdOrUsernameOrDisplayName(String search){
+        List<UserAccount> userAccounts = new ArrayList<>();
+        try{
+            userAccounts = userAccountRepository.findByIdContainsOrUsernameContainsOrDisplayNameContains(search,search,search);
+            return userAccounts;
+        }catch (Exception e){
+            return userAccounts;
+        }
+    }
+
+    public List<UserAccount> findAll(){
+        List<UserAccount> userAccounts = new ArrayList<>();
+        try{
+            userAccounts = userAccountRepository.findAll();
+            return userAccounts;
+        }catch (Exception e){
+            return userAccounts;
         }
     }
 }

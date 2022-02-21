@@ -20,7 +20,7 @@ public class Comment {
         this.idPost = idPost;
         this.idUser = idUser;
         this.dateCommented = dateCommented;
-    }
+    }   
 
     public String getId() {
         return id;

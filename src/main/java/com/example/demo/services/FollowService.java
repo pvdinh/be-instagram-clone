@@ -75,7 +75,7 @@ public class FollowService {
             followRepository.insert(new Follow("",userAccountService.getUID(),userFollowingId,System.currentTimeMillis()));
             updateFollow(userFollowingId,userAccountService.getUID());
             //thêm vào activity
-            activityService.insert(new Activity(userAccountService.getUID(),userFollowingId,"","follow",0,System.currentTimeMillis()));
+            activityService.insert(new Activity(userAccountService.getUID(),userFollowingId,"","follow",0,System.currentTimeMillis()),userAccountService.getUID());
             return SUCCESS;
         }catch (Exception e){
             System.out.println("Duplicate");
@@ -88,7 +88,7 @@ public class FollowService {
             followRepository.delete(followRepository.findFollowsByUserCurrentAndUserFollowing(userAccountService.getUID(),userFollowingId));
             //xoá khỏi activity
             Activity activity = activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(userAccountService.getUID(),userFollowingId,"follow");
-            activityService.delete(activity);
+            activityService.delete(activity,userAccountService.getUID());
             updateFollow(userFollowingId,userAccountService.getUID());
             return SUCCESS;
         }catch (Exception e){
@@ -101,7 +101,7 @@ public class FollowService {
             followRepository.delete(followRepository.findFollowsByUserCurrentAndUserFollowing(id,userAccountService.getUID()));
             //xoá khỏi activity
             Activity activity = activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(id,userAccountService.getUID(),"follow");
-            activityService.delete(activity);
+            activityService.delete(activity,userAccountService.getUID());
             updateFollow(userAccountService.getUID(),id);
             return SUCCESS;
         }catch (Exception e){

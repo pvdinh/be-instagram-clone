@@ -36,4 +36,13 @@ public class SortClassCustom {
             return Long.compare(o2.getPost().getDateCreated(), o1.getPost().getDateCreated());
         }
     }
+
+    //descending
+    public static class PostByPopular implements Comparator<PostDetail>{
+
+        @Override
+        public int compare(PostDetail o1, PostDetail o2) {
+            return Integer.compare((o2.getPost().getLikes().size() + o2.getNumberOfComments()),(o1.getPost().getLikes().size() + o1.getNumberOfComments()));
+        }
+    }
 }

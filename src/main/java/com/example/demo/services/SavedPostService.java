@@ -1,10 +1,12 @@
 package com.example.demo.services;
 
 import com.example.demo.models.Post;
+import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.models.saved_post.SavedPost;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.SavedPostRepository;
+import com.example.demo.repository.UserAccountSettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ public class SavedPostService {
     private LikeService likeService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private UserAccountSettingRepository userAccountSettingRepository;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -73,6 +77,19 @@ public class SavedPostService {
             postDetails.add(new PostDetail(post,numberOfComments,stringListLikes));
         });
         return postDetails;
+    }
+
+    public List<UserAccountSetting> getAllUserSavedPost(String postId){
+        List<UserAccountSetting> userAccountSettings = new ArrayList<>();
+        try {
+            savedPostRepository.findSavedPostByPostId(postId).forEach(savedPost -> {
+                UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(savedPost.getUserId());
+                userAccountSettings.add(userAccountSetting);
+            });
+            return userAccountSettings;
+        }catch (Exception e){
+            return userAccountSettings;
+        }
     }
 
 }
