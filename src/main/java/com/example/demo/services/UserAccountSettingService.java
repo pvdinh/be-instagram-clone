@@ -3,6 +3,8 @@ package com.example.demo.services;
 import com.example.demo.models.Post;
 import com.example.demo.models.UserAccount;
 import com.example.demo.models.UserAccountSetting;
+import com.example.demo.models.adminModels.UserAccountProfile;
+import com.example.demo.models.feedback.Feedback;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.models.profile.Profile;
 import com.example.demo.repository.UserAccountRepository;
@@ -11,6 +13,9 @@ import com.example.demo.utils.ConvertSHA1;
 import com.example.demo.utils.SortClassCustom;
 import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -190,6 +195,30 @@ public class UserAccountSettingService {
             }
         } catch (Exception e) {
             return FAIL;
+        }
+    }
+
+    public List<UserAccountSetting> filterByTime(long start, long end){
+        List<UserAccountSetting> userAccountSettings = new ArrayList<>();
+        try {
+            userAccountSettings = userAccountSettingRepository.filterByTime(start,end);
+            return userAccountSettings;
+        }catch (Exception e){
+            return userAccountSettings;
+        }
+    }
+
+
+    public List<UserAccountProfile> filterByTimePageable(long start,long end,int page,int size){
+        List<UserAccountProfile> userAccountProfiles = new ArrayList<>();
+        try {
+            Pageable pageable= PageRequest.of(page,size, Sort.by("dateCreated").descending());
+            userAccountSettingRepository.filterByTime(start,end,pageable).forEach(userAccountSetting -> {
+                userAccountProfiles.add(new UserAccountProfile(userAccountService.findUserAccountById(userAccountSetting.getId()),userAccountSetting));
+            });
+            return userAccountProfiles;
+        }catch (Exception e){
+            return userAccountProfiles;
         }
     }
 
