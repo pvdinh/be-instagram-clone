@@ -58,4 +58,16 @@ public class ManageUserController {
         }
     }
 
+    //http://localhost:8080/api/v1/admin/manage-user/filter
+    @GetMapping("/filter")
+    public BaseResponse filterByTime(@RequestParam(name = "start") String start, @RequestParam(name = "end") String end, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(), userAccountSettingService.filterByTimePageable(Long.parseLong(start), Long.parseLong(end), currentPage, pageSize), userAccountSettingService.filterByTime(Long.parseLong(start), Long.parseLong(end)).size());
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
 }
