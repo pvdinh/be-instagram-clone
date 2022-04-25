@@ -63,11 +63,18 @@ public class MessageService {
         return messageInformations;
     }
 
-    public MessageInformation findAllMessageBySenderAndReceiver(String receiver){
+    public MessageInformation findAllMessageBySenderAndReceiver(String receiver,int page,int size){
         List<Message> messages = messageRepository.findMessagesBySenderAndReceiver(receiver,userAccountService.getUID());
         messages.addAll(messageRepository.findMessagesBySenderAndReceiver(userAccountService.getUID(),receiver));
         Collections.sort(messages);
-        return new MessageInformation(userAccountSettingService.findUserAccountSettingById(receiver),messages);
+        UserAccountSetting userAccountSettingReceiver = userAccountSettingService.findUserAccountSettingById(receiver);
+        if (messages.size() <= size && page < 1) {
+            return new MessageInformation(userAccountSettingReceiver,messages);
+        } else if (messages.size() < size && page >= 1) {
+            return new MessageInformation(userAccountSettingReceiver,Collections.EMPTY_LIST);
+        }else if (messages.size() < ((page * size) + size)) {
+            return new MessageInformation(userAccountSettingReceiver,messages.subList(page * size, messages.size()));
+        } else return new MessageInformation(userAccountSettingReceiver,messages.subList(page * size, (page * size) + size));
     }
 
     public String postMessage(Message message){

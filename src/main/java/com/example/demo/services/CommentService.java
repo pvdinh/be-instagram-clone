@@ -2,11 +2,10 @@ package com.example.demo.services;
 
 import com.example.demo.models.*;
 import com.example.demo.models.activity.Activity;
+import com.example.demo.models.comment.Comment;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
-import com.example.demo.utils.AuthenticationCurrentUser;
 import com.example.demo.utils.SortClassCustom;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

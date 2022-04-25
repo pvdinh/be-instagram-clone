@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/message")
 public class MessageController {
@@ -35,9 +37,11 @@ public class MessageController {
     }
 
     @GetMapping("/{receiver}/receiver")
-    public BaseResponse findAllBySenderAndReceiver(@PathVariable(name = "receiver") String receiver){
+    public BaseResponse findAllBySenderAndReceiver(@PathVariable(name = "receiver") String receiver, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
         try{
-            return new ResponseObject<>(HttpStatus.OK.value(),messageService.findAllMessageBySenderAndReceiver(receiver));
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseObject<>(HttpStatus.OK.value(),messageService.findAllMessageBySenderAndReceiver(receiver,currentPage,pageSize));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
         }

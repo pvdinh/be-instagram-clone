@@ -1,5 +1,7 @@
 package com.example.demo.models;
 
+import com.example.demo.models.comment.Comment;
+
 public class CommentInformation {
     private UserAccountSetting userAccountSetting;
     private Comment comment;

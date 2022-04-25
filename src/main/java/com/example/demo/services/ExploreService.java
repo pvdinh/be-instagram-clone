@@ -1,11 +1,10 @@
 package com.example.demo.services;
 
-import com.example.demo.models.Comment;
 import com.example.demo.models.Post;
+import com.example.demo.models.comment.Comment;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
-import com.example.demo.utils.SortClassCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

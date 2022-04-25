@@ -16,6 +16,7 @@ public class Post {
     private List<String> likes;
     private String type;
     private String videoPath;
+    private int isBlock;
 
     public Post() {
         super();
@@ -31,6 +32,20 @@ public class Post {
         this.likes = likes;
         this.type = type;
         this.videoPath = videoPath;
+        this.isBlock = 0;
+    }
+
+    public Post(String id, String caption, String imagePath, String tags, String userId, long dateCreated, List<String> likes, String type, String videoPath, int isBlock) {
+        this.id = id;
+        this.caption = caption;
+        this.imagePath = imagePath;
+        this.tags = tags;
+        this.userId = userId;
+        this.dateCreated = dateCreated;
+        this.likes = likes;
+        this.type = type;
+        this.videoPath = videoPath;
+        this.isBlock = isBlock;
     }
 
     public String getId() {
@@ -103,5 +118,13 @@ public class Post {
 
     public void setVideoPath(String videoPath) {
         this.videoPath = videoPath;
+    }
+
+    public int getIsBlock() {
+        return isBlock;
+    }
+
+    public void setIsBlock(int isBlock) {
+        this.isBlock = isBlock;
     }
 }

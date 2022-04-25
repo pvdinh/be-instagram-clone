@@ -3,20 +3,25 @@ package com.example.demo.services;
 import com.example.demo.models.*;
 import com.example.demo.models.activity.Activity;
 import com.example.demo.models.blockPost.BlockPost;
+import com.example.demo.models.comment.Comment;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.repository.*;
 import com.example.demo.utils.SortClassCustom;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+
+import com.mongodb.client.*;
+
+import java.util.Arrays;
+import org.bson.Document;
 
 @Service
 public class PostService {
@@ -40,6 +45,16 @@ public class PostService {
     private CommentRepository commentRepository;
     @Autowired
     private BlockPostRepository blockPostRepository;
+    @Autowired
+    private StoryRepository storyRepository;
+    @Autowired
+    private ReportRepository reportRepository;
+    @Autowired
+    private ActivityRepository activityRepository;
+    @Autowired
+    private SavedPostRepository savedPostRepository;
+    @Autowired
+    private LikeCommentRepository likeCommentRepository;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -105,6 +120,144 @@ public class PostService {
         }
     }
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public Post getTop1Like(){
+        Post post = new Post();
+        MongoCollection<Document> collection = mongoTemplate.getCollection("post");
+
+
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$addFields",
+                        new Document("idPost",
+                                new Document("$toString", "$_id"))),
+                new Document("$lookup",
+                        new Document("from", "like")
+                                .append("localField", "idPost")
+                                .append("foreignField", "idPost")
+                                .append("as", "likes")),
+                new Document("$addFields",
+                        new Document("countLike",
+                                new Document("$size", "$likes"))),
+                new Document("$sort",
+                        new Document("countLike", -1L)),
+                new Document("$match",
+                        new Document("isBlock", 0L)),
+                new Document("$limit", 1L)));
+        MongoCursor<Document> mongoCursor = result.iterator();
+        while (mongoCursor.hasNext()){
+            Document next = mongoCursor.next();
+            String id = next.get("_id").toString();
+            String caption = next.get("caption").toString();
+            String imagePath = next.get("imagePath").toString();
+            String tag = next.get("tags").toString();
+            String userId = next.get("userId").toString();
+            String type = next.get("type").toString();
+            Object o = next.get("videoPath");
+            String videoPath = "";
+            if(o != null) videoPath = o.toString();
+            long dateCreated = Long.parseLong(next.get("dateCreated").toString());
+            post = new Post(id,caption,imagePath,tag,userId,dateCreated,Collections.emptyList(),type,videoPath);
+        }
+        return post;
+    }
+
+    public Post getTop1Comment(){
+        Post post = null;
+        MongoCollection<Document> collection = mongoTemplate.getCollection("post");
+
+
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$addFields",
+                        new Document("idPost",
+                                new Document("$toString", "$_id"))),
+                new Document("$lookup",
+                        new Document("from", "comment")
+                                .append("localField", "idPost")
+                                .append("foreignField", "idPost")
+                                .append("as", "comments")),
+                new Document("$addFields",
+                        new Document("countComment",
+                                new Document("$size", "$comments"))),
+                new Document("$sort",
+                        new Document("countComment", -1L)),
+                new Document("$match",
+                        new Document("isBlock", 0L)),
+                new Document("$limit", 1L)));
+        MongoCursor<Document> mongoCursor = result.iterator();
+        while (mongoCursor.hasNext()){
+            Document next = mongoCursor.next();
+            String id = next.get("_id").toString();
+            String caption = next.get("caption").toString();
+            String imagePath = next.get("imagePath").toString();
+            String tag = next.get("tags").toString();
+            String userId = next.get("userId").toString();
+            String type = next.get("type").toString();
+            Object o = next.get("videoPath");
+            String videoPath = "";
+            if(o != null) videoPath = o.toString();
+            long dateCreated = Long.parseLong(next.get("dateCreated").toString());
+            post = new Post(id,caption,imagePath,tag,userId,dateCreated,Collections.emptyList(),type,videoPath);
+        }
+        return post;
+    }
+
+    public Post getTop1Save(){
+        Post post = null;
+        MongoCollection<Document> collection = mongoTemplate.getCollection("post");
+
+
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$addFields",
+                        new Document("idPost",
+                                new Document("$toString", "$_id"))),
+                new Document("$lookup",
+                        new Document("from", "savedPost")
+                                .append("localField", "idPost")
+                                .append("foreignField", "postId")
+                                .append("as", "saves")),
+                new Document("$addFields",
+                        new Document("countSave",
+                                new Document("$size", "$saves"))),
+                new Document("$sort",
+                        new Document("countSave", -1L)),
+                new Document("$match",
+                        new Document("isBlock", 0L)),
+                new Document("$limit", 1L)));
+        MongoCursor<Document> mongoCursor = result.iterator();
+        while (mongoCursor.hasNext()){
+            Document next = mongoCursor.next();
+            String id = next.get("_id").toString();
+            String caption = next.get("caption").toString();
+            String imagePath = next.get("imagePath").toString();
+            String tag = next.get("tags").toString();
+            String userId = next.get("userId").toString();
+            String type = next.get("type").toString();
+            Object o = next.get("videoPath");
+            String videoPath = "";
+            if(o != null) videoPath = o.toString();
+            long dateCreated = Long.parseLong(next.get("dateCreated").toString());
+            post = new Post(id,caption,imagePath,tag,userId,dateCreated,Collections.emptyList(),type,videoPath);
+        }
+        return post;
+    }
+
+    public Post getTop1Popular(){
+        Post post = null;
+        List<PostDetail> postDetails = new ArrayList<>();
+        List<Post> posts = postRepository.findAll();
+        posts.forEach(p -> {
+            List<Comment> comments = commentRepository.findCommentByIdPost(p.getId());
+            postDetails.add(new PostDetail(p, comments.size(), Collections.emptyList()));
+        });
+        postDetails.sort(new SortClassCustom.PostByPopular());
+        for(int i =0; i < postDetails.size(); i++){
+            if(postDetails.get(i).getPost().getIsBlock() != 1){
+                post = postDetails.get(i).getPost();
+                break;
+            }
+        }
+        return post;
+    }
+
     public List<PostDetail> getPostDetailPopular(int page, int size) {
         List<PostDetail> postDetails = new ArrayList<>();
         try {
@@ -114,7 +267,7 @@ public class PostService {
                 postDetails.add(new PostDetail(post, comments.size(), Collections.emptyList()));
             });
             postDetails.sort(new SortClassCustom.PostByPopular());
-            if (postDetails.size() < size && page < 1) {
+            if (postDetails.size() <= size && page < 1) {
                 return postDetails;
             } else if (postDetails.size() < size && page >= 1) {
                 return Collections.emptyList();
@@ -222,8 +375,25 @@ public class PostService {
     public String deletePost(String pId) {
         try {
             Post post = postRepository.findPostById(pId);
-            String x = userAccountService.getUID();
             if (post != null && post.getUserId().equals(userAccountService.getUID())) {
+                //xoa trong story
+                storyRepository.deleteByIdPost(pId);
+                //xoa trong activity
+                activityRepository.deleteByIdPost(pId);
+                //xoa trong report
+                reportRepository.deleteByIdPost(pId);
+                //xoa trong like
+                likeRepository.deleteByIdPost(pId);
+                //xoa trong save post
+                savedPostRepository.deleteByPostId(pId);
+                //xoa trong comment
+                commentRepository.deleteByIdPost(pId);
+                //xoa trong likeComment
+                commentRepository.findCommentByIdPost(pId).forEach(comment -> {
+                    likeCommentRepository.deleteByIdComment(comment.getId());
+                });
+
+                //xoa bai dang
                 postRepository.delete(post);
                 updatePostQuantity();
                 return SUCCESS;
@@ -269,6 +439,7 @@ public class PostService {
             //xoá link video, thay đổi link ảnh
             post.setImagePath("https://res.cloudinary.com/dinhpv/image/upload/v1644923908/instargram-clone/eyes-dont-see_z5xppf.jpg");
             post.setVideoPath("");
+            post.setIsBlock(1);
             postRepository.save(post);
             return SUCCESS;
         }catch (Exception e){
@@ -283,6 +454,7 @@ public class PostService {
             //cập nhật lại link video,link ảnh đã block
             post.setImagePath(blockPost.getImagePath());
             post.setVideoPath(blockPost.getVideoPath());
+            post.setIsBlock(0);
             postRepository.save(post);
             //
             blockPostRepository.delete(blockPost);

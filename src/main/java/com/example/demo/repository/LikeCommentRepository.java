@@ -1,0 +1,15 @@
+package com.example.demo.repository;
+
+import com.example.demo.models.Like;
+import com.example.demo.models.comment.LikeComment;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
+
+public interface LikeCommentRepository extends MongoRepository<LikeComment, String> {
+    List<LikeComment> findByIdComment(String idComment);
+    List<LikeComment> findByIdComment(String idComment, Pageable pageable);
+    void deleteByIdComment(String idComment);
+    LikeComment findByIdCommentAndIdUser(String idComment,String idUser);
+}

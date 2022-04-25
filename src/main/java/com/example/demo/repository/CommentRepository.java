@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.models.Comment;
+import com.example.demo.models.comment.Comment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -8,4 +8,5 @@ import java.util.List;
 public interface CommentRepository extends MongoRepository<Comment,String> {
     List<Comment> findCommentByIdPost(String pId);
     List<Comment> findCommentByIdUserAndIdPost(String uId,String pId);
+    void deleteByIdPost(String idPost);
 }

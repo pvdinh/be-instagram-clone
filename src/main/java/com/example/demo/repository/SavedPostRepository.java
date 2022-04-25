@@ -9,4 +9,5 @@ public interface SavedPostRepository extends MongoRepository<SavedPost,String> {
     List<SavedPost> findSavedPostByUserId(String userId);
     SavedPost findSavedPostByUserIdAndPostId(String userId,String postId);
     List<SavedPost> findSavedPostByPostId(String postId);
+    void deleteByPostId(String idPost);
 }

@@ -16,4 +16,6 @@ public interface ReportRepository extends MongoRepository<Report,String> {
     List<Report> filterByTime(Long start, Long end);
     @Query("{'dateCreated': {$gte: ?0, $lte:?1 }}")
     List<Report> filterByTime(Long start,Long end,Pageable pageable);
+
+    void deleteByIdPost(String idPost);
 }

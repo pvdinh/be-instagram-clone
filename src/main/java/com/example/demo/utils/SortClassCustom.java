@@ -1,9 +1,8 @@
 package com.example.demo.utils;
 
-import com.example.demo.models.Comment;
 import com.example.demo.models.Like;
-import com.example.demo.models.Post;
 import com.example.demo.models.PostInformation;
+import com.example.demo.models.comment.Comment;
 import com.example.demo.models.profile.PostDetail;
 
 import java.util.Comparator;

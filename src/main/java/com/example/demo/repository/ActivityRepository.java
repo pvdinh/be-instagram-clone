@@ -13,4 +13,5 @@ public interface ActivityRepository extends MongoRepository<Activity,String> {
     Activity findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(String idCurrentUser,String idInteractUser,String typeActivity);
     Activity findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(String idCurrentUser,String idInteractUser,String typeActivity,String idPost);
     List<Activity> findByIdInteractUser(String idInteractUser, Pageable pageable);
+    void deleteByIdPost(String idPost);
 }

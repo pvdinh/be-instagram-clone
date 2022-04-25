@@ -1,9 +1,9 @@
 package com.example.demo.controllers.webSocketController;
 
-import com.example.demo.models.Comment;
+import com.example.demo.models.comment.Comment;
+import com.example.demo.models.comment.ReplyComment;
 import com.example.demo.services.CommentService;
-import com.example.demo.services.PostService;
-import com.example.demo.services.UserAccountService;
+import com.example.demo.services.ReplyCommentService;
 import com.example.demo.utils.TokenAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,6 +17,8 @@ import java.util.HashMap;
 public class PostWebSocketController {
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private ReplyCommentService replyCommentService;
 
     @MessageMapping("comment.allComment")
     @SendTo("/post/allComment")
@@ -43,6 +45,34 @@ public class PostWebSocketController {
             return comment;
         }catch (Exception e){
             return new Comment();
+        }
+    }
+
+    @MessageMapping("comment.deleteReplyComment")
+    @SendTo("/post/allComment")
+    public ReplyComment deleteComment(@Payload ReplyComment replyComment) {
+        try {
+            if (replyComment.getIdPost() != null && replyComment.getIdUser() != null) {
+                replyCommentService.deleteReplyComment(replyComment);
+            }
+            return replyComment;
+        }catch (Exception e){
+            return new ReplyComment();
+        }
+    }
+
+
+
+    @MessageMapping("comment.replyComment")
+    @SendTo("/post/allComment")
+    public ReplyComment receiverReplyComment(@Payload ReplyComment replyComment) {
+        try {
+            if (replyComment.getIdPost() != null && replyComment.getIdUser() != null) {
+                replyCommentService.replyComment(replyComment);
+            }
+            return replyComment;
+        }catch (Exception e){
+            return new ReplyComment();
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Comment;
 import com.example.demo.models.Post;
 import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
@@ -10,13 +9,13 @@ import com.example.demo.services.CommentService;
 import com.example.demo.services.PostService;
 import com.example.demo.services.SavedPostService;
 import com.example.demo.services.UserAccountService;
-import com.example.demo.utils.UsernameFromJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/post")
@@ -90,8 +89,10 @@ public class PostController {
         }
     }
     @GetMapping("/{postId}/comment")
-    public BaseResponse getAllCommentInPost(@PathVariable(name = "postId")String pId){
+    public BaseResponse getAllCommentInPost(@PathVariable(name = "postId")String pId, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
         try{
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
             return new ResponseObject(HttpStatus.OK.value(),commentService.findCommentByIdPost(pId));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
@@ -151,4 +152,42 @@ public class PostController {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
     }
+
+    @GetMapping("/top-1-like")
+    public BaseResponse getTop1Like(){
+        try{
+            Post post = postService.getTop1Like();
+            return new ResponseObject(HttpStatus.OK.value(),postService.getTop1Like());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/top-1-comment")
+    public BaseResponse getTop1Comment(){
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),postService.getTop1Comment());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/top-1-save")
+    public BaseResponse getTop1Save(){
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),postService.getTop1Save());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/top-1-popular")
+    public BaseResponse getTop1Popular(){
+        try{
+            return new ResponseObject(HttpStatus.OK.value(),postService.getTop1Popular());
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
 }
