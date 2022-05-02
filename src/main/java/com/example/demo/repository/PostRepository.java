@@ -14,6 +14,7 @@ public interface PostRepository extends MongoRepository<Post,String> {
     List<Post> findPostByIdGroup(String idGroup,Pageable pageable);
 
     List<Post> findPostVideoByTypeAndUserId(String type, String uId, Pageable pageable);
+    List<Post> findPostByPrivacyAndUserId(Integer privacy,String idUser, Pageable pageable);
 
     List<Post> findByUserIdContainsOrId(String uId,String pId,Pageable pageable);
     List<Post> findByUserIdContainsOrId(String uId,String pId);

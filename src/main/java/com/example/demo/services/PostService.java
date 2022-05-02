@@ -469,6 +469,25 @@ public class PostService {
         }
     }
 
+    public List<PostDetail> getPostPrivate(String username, int page, int size) {
+        List<PostDetail> postDetails = new ArrayList<>();
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+            UserAccount userAccount = userAccountService.findUserAccountByUsername(username);
+            if (userAccount != null) {
+                List<Post> posts = postRepository.findPostByPrivacyAndUserId(1,userAccount.getId(), pageable);
+                posts.forEach(post -> {
+                    List<String> stringListLike = likeService.getListUserLikedPost(post.getId());
+                    int numberOfComments = commentService.findCommentByIdPost(post.getId()).size();
+                    postDetails.add(new PostDetail(post, numberOfComments, stringListLike));
+                });
+                return postDetails;
+            } else return postDetails;
+        } catch (Exception e) {
+            return postDetails;
+        }
+    }
+
     //thuực hiện khoá 1 bài đăng (sau 30 ngày tự động xoá)
     public String blockPost(String pId){
         try {

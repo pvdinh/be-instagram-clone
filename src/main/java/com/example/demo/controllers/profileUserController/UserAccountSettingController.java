@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user-account-setting")
@@ -121,6 +122,17 @@ public class UserAccountSettingController {
     public BaseResponse getPostVideo(@PathVariable(name = "username")String username,@RequestParam(name = "page")int page,@RequestParam(name = "size")int size){
         try{
             return new ResponseData(HttpStatus.OK.value(),postService.getPostVideo(username,page,size));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("/{username}/get-post-private")
+    public BaseResponse getPostPrivate(@PathVariable(name = "username")String username, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
+        try{
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(),postService.getPostPrivate(username,currentPage,pageSize));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
