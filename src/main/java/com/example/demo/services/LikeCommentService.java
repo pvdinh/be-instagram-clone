@@ -54,7 +54,7 @@ public class LikeCommentService {
             Optional<Comment> commentO = commentRepository.findById(idComment);
             Comment comment = commentO.orElse(new Comment());
             Post post = postRepository.findPostById(comment.getIdPost());
-            if(!idUser.equals(post.getUserId())){
+            if(!idUser.equals(post.getUserId()) && !idUser.equals(comment.getIdUser())){
                 activityService.insert(new Activity(userAccountService.getUID(),comment.getIdUser(),post.getId(),"likeComment",0,System.currentTimeMillis()),userAccountService.getUID());
             }
             return SUCCESS;
@@ -71,7 +71,7 @@ public class LikeCommentService {
             Optional<Comment> commentO = commentRepository.findById(idComment);
             Comment comment = commentO.orElse(new Comment());
             Post post = postRepository.findPostById(comment.getIdPost());
-            if(!idUser.equals(post.getUserId())){
+            if(!idUser.equals(post.getUserId()) && !idUser.equals(comment.getIdUser())){
                 Activity activity = activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(userAccountService.getUID(), comment.getIdUser(), "likeComment", userAccountService.getUID());
                 activityService.delete(activity,comment.getIdUser());
             }

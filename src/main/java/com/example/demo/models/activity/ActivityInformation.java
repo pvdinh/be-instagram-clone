@@ -1,7 +1,6 @@
 package com.example.demo.models.activity;
 
 import com.example.demo.models.Post;
-import com.example.demo.models.PostInformation;
 import com.example.demo.models.UserAccountSetting;
 
 import java.util.List;

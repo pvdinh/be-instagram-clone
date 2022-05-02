@@ -90,7 +90,11 @@ public class UserAccountSettingService {
             posts.forEach(post -> {
                 List<String> listLikeString = likeService.getListUserLikedPost(post.getId());
                 int numberOfComments = commentService.findCommentByIdPost(post.getId()).size();
-                postDetails.add(new PostDetail(post, numberOfComments, listLikeString));
+                if(post.getUserId().equals(userAccountService.getUID())){
+                    postDetails.add(new PostDetail(post, numberOfComments, listLikeString));
+                }else if(post.getPrivacy() == 0){
+                    postDetails.add(new PostDetail(post, numberOfComments, listLikeString));
+                }
             });
             postDetails.sort(new SortClassCustom.PostProfileByDateCreate());
             return new Profile(userAccountSetting, postDetails);

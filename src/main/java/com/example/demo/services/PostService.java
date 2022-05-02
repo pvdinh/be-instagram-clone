@@ -4,6 +4,8 @@ import com.example.demo.models.*;
 import com.example.demo.models.activity.Activity;
 import com.example.demo.models.blockPost.BlockPost;
 import com.example.demo.models.comment.Comment;
+import com.example.demo.models.group.Group;
+import com.example.demo.models.group.GroupMember;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.repository.*;
 import com.example.demo.utils.SortClassCustom;
@@ -55,6 +57,10 @@ public class PostService {
     private SavedPostRepository savedPostRepository;
     @Autowired
     private LikeCommentRepository likeCommentRepository;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private GroupMemberRepository groupMemberRepository;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -290,32 +296,63 @@ public class PostService {
     public PostInformation getPostInformationOfUser(String pId) {
         Post post = postRepository.findPostById(pId);
         if (post != null) {
-            UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
-            return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()));
+            if(post.getUserId().equals(userAccountService.getUID())){
+                UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
+                Group group = groupService.findById(post.getIdGroup());
+                return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group);
+            }
+            if(post.getPrivacy() == 0){
+                UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
+                Group group = groupService.findById(post.getIdGroup());
+                return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group);
+            }
+            return new PostInformation(null, null, null, null);
         } else {
-            return new PostInformation(null, null, null);
+            return new PostInformation(null, null, null, null);
         }
     }
 
     public List<PostInformation> getAllPostInformationFollowing(int page, int size) {
         List<PostInformation> postInformations = new ArrayList<>();
-        List<UserAccountSetting> userAccountSettings = new ArrayList<>();
-        List<Follow> follows = followService.findFollowByUserCurrent();
-        follows.forEach(follow -> {
-            userAccountSettings.add(userAccountSettingRepository.findUserAccountSettingById(follow.getUserFollowing()));
-        });
-        userAccountSettings.forEach(userAccountSetting -> {
-            List<Post> posts = postRepository.findPostByUserId(userAccountSetting.getId());
-            posts.forEach(post -> {
-                postInformations.add(new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId())));
+        try {
+            List<UserAccountSetting> userAccountSettings = new ArrayList<>();
+            List<Follow> follows = followService.findFollowByUserCurrent();
+            follows.forEach(follow -> {
+                userAccountSettings.add(userAccountSettingRepository.findUserAccountSettingById(follow.getUserFollowing()));
             });
-        });
-        postInformations.sort(new SortClassCustom.PostByDateCreate());
-        if (postInformations.size() < size && page < 1) {
-            return postInformations.subList(0, postInformations.size());
-        } else if (postInformations.size() < size && page >= 1) {
-            return Collections.emptyList();
-        } else return postInformations.subList(page * size, (page * size) + size);
+            userAccountSettings.forEach(userAccountSetting -> {
+                List<Post> posts = postRepository.findPostByUserId(userAccountSetting.getId());
+                posts.forEach(post -> {
+                    //neu privacy la == 0 (public) thi se duoc hien thi voi nhung nguoi theo doi
+                    //2 nguoi trong cung nhom moi nhin thay bai dang cau nhau o trang home
+                    if(post.getPrivacy() == 0 ){
+                        Group group = groupService.findById(post.getIdGroup());
+                        if(group != null && checkExistsInGroup(post.getUserId(),userAccountService.getUID(),group.getId())){
+                            postInformations.add(new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group));
+                        } else if(group != null && !checkExistsInGroup(post.getUserId(),userAccountService.getUID(),group.getId())){
+
+                        }else postInformations.add(new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group));
+
+                    }
+                });
+            });
+            postInformations.sort(new SortClassCustom.PostByDateCreate());
+            if (postInformations.size() < size && page < 1) {
+                return postInformations.subList(0, postInformations.size());
+            } else if (postInformations.size() < size && page >= 1) {
+                return Collections.emptyList();
+            } else return postInformations.subList(page * size, (page * size) + size);
+        }catch (Exception e){
+            return postInformations;
+        }
+    }
+
+    public boolean checkExistsInGroup(String u1,String u2,String g){
+        GroupMember g1 = groupMemberRepository.findByIdGroupAndIdUser(g,u1);
+        GroupMember g2 = groupMemberRepository.findByIdGroupAndIdUser(g,u2);
+        if(g1 != null && g2 != null && g1.getStatus() == 1 && g2.getStatus() == 1){
+            return true;
+        }else return false;
     }
 
     public String like(String uId, String pId) {
@@ -359,6 +396,9 @@ public class PostService {
             post.setDateCreated(System.currentTimeMillis());
             post.setLikes(Collections.emptyList());
             post.setUserId(userAccountService.getUID());
+            post.setIsBlock(0);
+            if(post.getIdGroup() == null) post.setIdGroup("");
+            if(post.getVideoPath() == null) post.setVideoPath("");
             if (post.getUserId() == "" || post.getUserId() == null) {
                 return FAIL;
             } else {

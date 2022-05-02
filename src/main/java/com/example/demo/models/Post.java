@@ -17,6 +17,8 @@ public class Post {
     private String type;
     private String videoPath;
     private int isBlock;
+    private int privacy;
+    private String idGroup;
 
     public Post() {
         super();
@@ -33,6 +35,8 @@ public class Post {
         this.type = type;
         this.videoPath = videoPath;
         this.isBlock = 0;
+        this.privacy = 0;
+        this.idGroup = "";
     }
 
     public Post(String id, String caption, String imagePath, String tags, String userId, long dateCreated, List<String> likes, String type, String videoPath, int isBlock) {
@@ -46,6 +50,22 @@ public class Post {
         this.type = type;
         this.videoPath = videoPath;
         this.isBlock = isBlock;
+        this.privacy = 0;
+        this.idGroup = "";
+    }
+
+    public Post(String caption, String imagePath, String tags, String userId, long dateCreated, List<String> likes, String type, String videoPath, int isBlock, int privacy, String idGroup) {
+        this.caption = caption;
+        this.imagePath = imagePath;
+        this.tags = tags;
+        this.userId = userId;
+        this.dateCreated = dateCreated;
+        this.likes = likes;
+        this.type = type;
+        this.videoPath = videoPath;
+        this.isBlock = isBlock;
+        this.privacy = privacy;
+        this.idGroup = idGroup;
     }
 
     public String getId() {
@@ -126,5 +146,21 @@ public class Post {
 
     public void setIsBlock(int isBlock) {
         this.isBlock = isBlock;
+    }
+
+    public int getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(int privacy) {
+        this.privacy = privacy;
+    }
+
+    public String getIdGroup() {
+        return idGroup;
+    }
+
+    public void setIdGroup(String idGroup) {
+        this.idGroup = idGroup;
     }
 }

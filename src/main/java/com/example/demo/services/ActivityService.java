@@ -1,6 +1,5 @@
 package com.example.demo.services;
 
-import com.example.demo.models.PostInformation;
 import com.example.demo.models.activity.Activity;
 import com.example.demo.models.activity.ActivityInformation;
 import com.example.demo.repository.ActivityRepository;
