@@ -20,6 +20,7 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
+    //check role user in group to display front end
     @GetMapping("/{idGroup}")
     public BaseResponse findById(@PathVariable(name = "idGroup") String idGroup) {
         try {
@@ -90,6 +91,72 @@ public class GroupController {
         }
     }
 
+    @PostMapping("{idGroup}/request-join-group")
+    public BaseResponse requestJoinGroup(@PathVariable(name = "idGroup") String idGroup){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),groupService.requestJoinGroup(idGroup));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
 
+    //user cancel or left group
+    @DeleteMapping("{idGroup}/cancel-request-join-group")
+    public BaseResponse CancelRequestJoinGroup(@PathVariable(name = "idGroup") String idGroup){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),groupService.cancelRequestJoinGroup(idGroup));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
 
+    //admin cancel request user Or remove user from group
+    @DeleteMapping("{idGroup}/reject-request-join-group")
+    public BaseResponse rejectRequestJoinGroup(@PathVariable(name = "idGroup") String idGroup,@RequestParam(name = "idUser") String idUser){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),groupService.rejectRequestJoinGroup(idGroup,idUser));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("{idGroup}/get-member")
+    public BaseResponse getMemberInGroup(@PathVariable(name = "idGroup") String idGroup,@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
+        try{
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(),groupService.getMemberInGroup(idGroup,1,currentPage,pageSize));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @GetMapping("{idGroup}/get-member-request")
+    public BaseResponse getMemberRequestInGroup(@PathVariable(name = "idGroup") String idGroup,@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size){
+        try{
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(),groupService.getMemberInGroup(idGroup,0,currentPage,pageSize));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @PutMapping("{idGroup}/confirm-member-request")
+    public BaseResponse confirmMemberRequest(@PathVariable(name = "idGroup") String idGroup,@RequestBody GroupMember groupMember){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),groupService.confirmMemberRequest(groupMember));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
+
+    @DeleteMapping("{idGroup}/cancel-member-request")
+    public BaseResponse cancelMemberRequest(@PathVariable(name = "idGroup") String idGroup,@RequestBody GroupMember groupMember){
+        try{
+            return new ResponseMessage(HttpStatus.OK.value(),groupService.cancelMemberRequest(groupMember));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+        }
+    }
 }

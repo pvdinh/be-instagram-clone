@@ -9,8 +9,9 @@ import java.util.List;
 
 @Repository
 public interface GroupMemberRepository extends MongoRepository<GroupMember, String> {
-    List<GroupMember> findByRoleAndIdUser(String role, String idUSer, Pageable pageable);
-    List<GroupMember> findByIdUserAndStatus(String role,int status);
+    List<GroupMember> findByRoleAndIdUserAndStatus(String role, String idUSer,Integer status ,Pageable pageable);
+    List<GroupMember> findByIdUserAndStatus(String idUser,int status);
+    List<GroupMember> findByIdGroupAndStatus(String idGroup,int status,Pageable pageable);
     List<GroupMember> findByIdGroup(String idGroup);
     GroupMember findByIdGroupAndIdUser(String idGroup,String idUser);
 }

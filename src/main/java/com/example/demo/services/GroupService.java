@@ -2,14 +2,17 @@ package com.example.demo.services;
 
 import com.example.demo.models.Post;
 import com.example.demo.models.PostInformation;
+import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.group.Group;
 import com.example.demo.models.group.GroupInformation;
 import com.example.demo.models.group.GroupMember;
+import com.example.demo.models.group.MemberInGroup;
 import com.example.demo.repository.GroupMemberRepository;
 import com.example.demo.repository.GroupRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
 import com.example.demo.utils.SortClassCustom;
+import com.mongodb.client.model.Facet;
 import com.mongodb.client.model.Sorts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +68,7 @@ public class GroupService {
         List<Group> groups = new ArrayList<>();
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
-            List<GroupMember> groupMembers = groupMemberRepository.findByRoleAndIdUser(role, userAccountService.getUID(), pageable);
+            List<GroupMember> groupMembers = groupMemberRepository.findByRoleAndIdUserAndStatus(role, userAccountService.getUID(),1, pageable);
             groupMembers.forEach(groupMember -> {
                 groups.add(groupRepository.findById(groupMember.getIdGroup()).orElse(new Group()));
             });
@@ -125,9 +128,33 @@ public class GroupService {
 
     public List<Group> findByNameContain(String name) {
         List<Group> groups = new ArrayList<>();
-        Pageable pageable = PageRequest.of(0, 20);
-        groups = groupRepository.findByNameContains(name, pageable);
-        return groups;
+        try
+        {
+            Pageable pageable = PageRequest.of(0, 20);
+            groups = groupRepository.findByNameContains(name, pageable);
+            LOGGER.info("get success.");
+            return groups;
+        }catch (Exception e){
+            LOGGER.info("get fail cause:", e.getCause());
+            return groups;
+        }
+    }
+
+    public List<MemberInGroup> getMemberInGroup(String idGroup,int status,int page,int size) {
+        List<MemberInGroup> memberInGroups = new ArrayList<>();
+        try {
+            Pageable pageable = PageRequest.of(page,size,Sort.by("dateCreated").descending());
+            groupMemberRepository.findByIdGroupAndStatus(idGroup,status,pageable).forEach(groupMember -> {
+                UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(groupMember.getIdUser());
+                UserAccountSetting userInvite = userAccountSettingRepository.findUserAccountSettingById(groupMember.getIdUserInvite());
+                memberInGroups.add(new MemberInGroup(groupMember,userAccountSetting,userInvite));
+            });
+            LOGGER.info("get success member: {}", memberInGroups.size());
+            return memberInGroups;
+        }catch (Exception e){
+            LOGGER.error("get member fail: {}", e.getCause());
+            return memberInGroups;
+        }
     }
 
     public String addMemberIntoGroup(GroupMember gm) {
@@ -157,6 +184,111 @@ public class GroupService {
 
         } catch (Exception e) {
             LOGGER.error("insert member fail: {}", e.getCause());
+            return FAIL;
+        }
+    }
+    public String requestJoinGroup(String idGroup) {
+        try {
+            GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(idGroup, userAccountService.getUID());
+            if (gmc == null) {
+                //
+                GroupMember groupMember = new GroupMember();
+                groupMember.setDateCreated(System.currentTimeMillis());
+                groupMember.setDateJoined(System.currentTimeMillis());
+                groupMember.setIdGroup(idGroup);
+                groupMember.setIdUser(userAccountService.getUID());
+                groupMember.setRole("MEMBER");
+                groupMember.setStatus(0);
+                groupMember.setIdUserInvite(userAccountService.getUID());
+                groupMemberRepository.insert(groupMember);
+                LOGGER.info("request success member: {}", groupMember.getId());
+                return SUCCESS;
+            } else return DUPLICATE;
+
+        } catch (Exception e) {
+            LOGGER.error("request member fail: {}", e.getCause());
+            return FAIL;
+        }
+    }
+
+    public String confirmMemberRequest(GroupMember groupMember) {
+        try {
+            GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), groupMember.getIdUser());
+            GroupMember checkRole = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), userAccountService.getUID());
+            if (gmc != null && checkRole.getRole().equals("ADMIN") ) {
+
+                //
+                gmc.setStatus(1);
+                gmc.setDateJoined(System.currentTimeMillis());
+                groupMemberRepository.save(gmc);
+                //
+
+                //update number membership
+                Group group = groupRepository.findById(groupMember.getIdGroup()).orElse(null);
+                group.setNumberMembership(groupMemberRepository.findByIdGroup(groupMember.getIdGroup()).size());
+                groupRepository.save(group);
+
+                LOGGER.info("confirm success member: {}", gmc.getId());
+                return SUCCESS;
+            } else return FAIL;
+
+        } catch (Exception e) {
+            LOGGER.error("confirm member fail: {}", e.getCause());
+            return FAIL;
+        }
+    }
+
+    public String cancelMemberRequest(GroupMember groupMember) {
+        try {
+            GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), groupMember.getIdUser());
+            GroupMember checkRole = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), userAccountService.getUID());
+            if (gmc != null && checkRole.getRole().equals("ADMIN") ) {
+                //
+                gmc.setStatus(1);
+                groupMemberRepository.delete(gmc);
+                LOGGER.info("confirm success member: {}", gmc.getId());
+                return SUCCESS;
+            } else return FAIL;
+
+        } catch (Exception e) {
+            LOGGER.error("confirm member fail: {}", e.getCause());
+            return FAIL;
+        }
+    }
+
+    public String cancelRequestJoinGroup(String idGroup) {
+        try {
+            GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(idGroup, userAccountService.getUID());
+            if (gmc != null) {
+                //
+                groupMemberRepository.delete(gmc);
+
+                //update number membership when delete
+                Group group = groupRepository.findById(idGroup).orElse(null);
+                group.setNumberMembership(groupMemberRepository.findByIdGroup(idGroup).size());
+                groupRepository.save(group);
+                LOGGER.info("cancel request success member: {}", gmc.getId());
+                return SUCCESS;
+            } else return FAIL;
+
+        } catch (Exception e) {
+            LOGGER.error("cancel request member fail: {}", e.getCause());
+            return FAIL;
+        }
+    }
+
+    public String rejectRequestJoinGroup(String idGroup,String idUser) {
+        try {
+            GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(idGroup, idUser);
+            if (gmc != null) {
+                //
+                groupMemberRepository.delete(gmc);
+                LOGGER.info("reject request success member: {}", gmc.getId());
+                return SUCCESS;
+            } else return FAIL;
+
+        } catch (Exception e) {
+            LOGGER.error("reject request member fail: {}", e.getCause());
             return FAIL;
         }
     }

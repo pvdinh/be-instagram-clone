@@ -61,6 +61,8 @@ public class PostService {
     private GroupService groupService;
     @Autowired
     private GroupMemberRepository groupMemberRepository;
+    @Autowired
+    private ReplyCommentRepository replyCommentRepository;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -148,7 +150,8 @@ public class PostService {
                 new Document("$sort",
                         new Document("countLike", -1L)),
                 new Document("$match",
-                        new Document("isBlock", 0L)),
+                        new Document("isBlock", 0L)
+                                .append("privacy", 0L)),
                 new Document("$limit", 1L)));
         MongoCursor<Document> mongoCursor = result.iterator();
         while (mongoCursor.hasNext()){
@@ -181,13 +184,24 @@ public class PostService {
                                 .append("localField", "idPost")
                                 .append("foreignField", "idPost")
                                 .append("as", "comments")),
+                new Document("$lookup",
+                        new Document("from", "replyComment")
+                                .append("localField", "idPost")
+                                .append("foreignField", "idPost")
+                                .append("as", "replyComments")),
                 new Document("$addFields",
                         new Document("countComment",
-                                new Document("$size", "$comments"))),
+                                new Document("$size", "$comments"))
+                                .append("countReplyComment",
+                                        new Document("$size", "$replyComments"))),
+                new Document("$addFields",
+                        new Document("count",
+                                new Document("$add", Arrays.asList("$countComment", "$countReplyComment")))),
                 new Document("$sort",
-                        new Document("countComment", -1L)),
+                        new Document("count", -1L)),
                 new Document("$match",
-                        new Document("isBlock", 0L)),
+                        new Document("isBlock", 0L)
+                                .append("privacy", 0L)),
                 new Document("$limit", 1L)));
         MongoCursor<Document> mongoCursor = result.iterator();
         while (mongoCursor.hasNext()){
@@ -226,7 +240,8 @@ public class PostService {
                 new Document("$sort",
                         new Document("countSave", -1L)),
                 new Document("$match",
-                        new Document("isBlock", 0L)),
+                        new Document("isBlock", 0L)
+                                .append("privacy", 0L)),
                 new Document("$limit", 1L)));
         MongoCursor<Document> mongoCursor = result.iterator();
         while (mongoCursor.hasNext()){
@@ -415,7 +430,10 @@ public class PostService {
     public String deletePost(String pId) {
         try {
             Post post = postRepository.findPostById(pId);
-            if (post != null && post.getUserId().equals(userAccountService.getUID())) {
+            //admin group xoa bai
+            GroupMember groupMember = groupMemberRepository.findByIdGroupAndIdUser(post.getIdGroup(),userAccountService.getUID());
+
+            if ((post != null && ( post.getUserId().equals(userAccountService.getUID()) || (groupMember != null && groupMember.getRole().equals("ADMIN")) ))) {
                 //xoa trong story
                 storyRepository.deleteByIdPost(pId);
                 //xoa trong activity
@@ -432,6 +450,8 @@ public class PostService {
                 commentRepository.findCommentByIdPost(pId).forEach(comment -> {
                     likeCommentRepository.deleteByIdComment(comment.getId());
                 });
+                //xoa trongh replyComment
+                replyCommentRepository.deleteAllByIdPost(pId);
 
                 //xoa bai dang
                 postRepository.delete(post);

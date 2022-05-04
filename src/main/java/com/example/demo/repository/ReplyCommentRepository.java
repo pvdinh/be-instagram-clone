@@ -10,4 +10,5 @@ import java.util.List;
 public interface ReplyCommentRepository extends MongoRepository<ReplyComment,String> {
     List<ReplyComment> findByIdComment(String idComment);
     List<ReplyComment> findReplyCommentByIdUserAndIdPostAndIdComment(String idUser,String idPost,String idComment);
+    void deleteAllByIdPost(String idPost);
 }
