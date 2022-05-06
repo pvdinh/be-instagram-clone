@@ -14,4 +14,5 @@ public interface GroupMemberRepository extends MongoRepository<GroupMember, Stri
     List<GroupMember> findByIdGroupAndStatus(String idGroup,int status,Pageable pageable);
     List<GroupMember> findByIdGroup(String idGroup);
     GroupMember findByIdGroupAndIdUser(String idGroup,String idUser);
+    GroupMember findByIdGroupAndIdUserAndStatus(String idGroup,String idUser,Integer status);
 }

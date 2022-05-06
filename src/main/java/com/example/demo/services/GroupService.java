@@ -157,6 +157,26 @@ public class GroupService {
         }
     }
 
+    public List<MemberInGroup> searchMemberInGroup(String search,String idGroup,int status,int page,int size) {
+        List<MemberInGroup> memberInGroups = new ArrayList<>();
+        try {
+            Pageable pageable = PageRequest.of(page,size,Sort.by("dateCreated").descending());
+            List<UserAccountSetting> userAccountSettings = userAccountSettingRepository.findUserAccountSettingsByUsernameContains(search);
+            userAccountSettings.forEach(userAccountSetting -> {
+                GroupMember groupMember = groupMemberRepository.findByIdGroupAndIdUserAndStatus(idGroup,userAccountSetting.getId(),status);
+                if(groupMember != null){
+                    UserAccountSetting userInvite = userAccountSettingRepository.findUserAccountSettingById(groupMember.getIdUserInvite());
+                    memberInGroups.add(new MemberInGroup(groupMember,userAccountSetting,userInvite));
+                }
+            });
+            LOGGER.info("search success member: {}", memberInGroups.size());
+            return memberInGroups;
+        }catch (Exception e){
+            LOGGER.error("search member fail: {}", e.getCause());
+            return memberInGroups;
+        }
+    }
+
     public String addMemberIntoGroup(GroupMember gm) {
         try {
             GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(gm.getIdGroup(), gm.getIdUser());
@@ -262,11 +282,6 @@ public class GroupService {
             if (gmc != null) {
                 //
                 groupMemberRepository.delete(gmc);
-
-                //update number membership when delete
-                Group group = groupRepository.findById(idGroup).orElse(null);
-                group.setNumberMembership(groupMemberRepository.findByIdGroup(idGroup).size());
-                groupRepository.save(group);
                 LOGGER.info("cancel request success member: {}", gmc.getId());
                 return SUCCESS;
             } else return FAIL;
@@ -283,6 +298,11 @@ public class GroupService {
             if (gmc != null) {
                 //
                 groupMemberRepository.delete(gmc);
+                //update number membership when delete
+                Group group = groupRepository.findById(idGroup).orElse(null);
+                group.setNumberMembership(groupMemberRepository.findByIdGroup(idGroup).size());
+                groupRepository.save(group);
+
                 LOGGER.info("reject request success member: {}", gmc.getId());
                 return SUCCESS;
             } else return FAIL;

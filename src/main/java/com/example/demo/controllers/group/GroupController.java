@@ -159,4 +159,27 @@ public class GroupController {
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }
     }
+
+    @GetMapping("/{idGroup}/search-member")
+    public BaseResponse searchMemberInGroup(@RequestParam(name = "search")String search,@PathVariable(name = "idGroup") String idGroup,@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(), groupService.searchMemberInGroup(search,idGroup,1,currentPage,pageSize));
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "fail");
+        }
+    }
+
+    @GetMapping("/{idGroup}/search-member-request")
+    public BaseResponse searchMemberRequestInGroup(@RequestParam(name = "search")String search,@PathVariable(name = "idGroup") String idGroup,@RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
+        try {
+            int currentPage = page.orElse(0);
+            int pageSize = size.orElse(10);
+            return new ResponseData(HttpStatus.OK.value(), groupService.searchMemberInGroup(search,idGroup,0,currentPage,pageSize));
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "fail");
+        }
+    }
+
 }
