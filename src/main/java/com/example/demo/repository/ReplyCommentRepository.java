@@ -11,4 +11,5 @@ public interface ReplyCommentRepository extends MongoRepository<ReplyComment,Str
     List<ReplyComment> findByIdComment(String idComment);
     List<ReplyComment> findReplyCommentByIdUserAndIdPostAndIdComment(String idUser,String idPost,String idComment);
     void deleteAllByIdPost(String idPost);
+    void deleteByIdUser(String idUser);
 }

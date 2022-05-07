@@ -107,4 +107,11 @@ public class MessageService {
         return userAccountSettings.size() > 49 ? userAccountSettings.subList(0,50) : userAccountSettings;
     }
 
+    public void deleteBySender(String idUSer){
+        messageRepository.deleteBySender(idUSer);
+    }
+    public void deleteByReceiver(String idUSer){
+        messageRepository.deleteByReceiver(idUSer);
+    }
+
 }

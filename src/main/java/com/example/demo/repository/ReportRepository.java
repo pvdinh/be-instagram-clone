@@ -18,4 +18,5 @@ public interface ReportRepository extends MongoRepository<Report,String> {
     List<Report> filterByTime(Long start,Long end,Pageable pageable);
 
     void deleteByIdPost(String idPost);
+    void deleteByIdUser(String idUser);
 }

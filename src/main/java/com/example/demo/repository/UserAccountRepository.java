@@ -14,8 +14,9 @@ public interface UserAccountRepository extends MongoRepository<UserAccount,Strin
     UserAccount findUserAccountById(String id);
     UserAccount findUserAccountByPhoneNumber(String phoneNumber);
     UserAccount findUserAccountByEmail(String email);
-    List<UserAccount> findByIdContainsOrUsernameContainsOrDisplayNameContains(String id, String username, String displayName, Pageable pageable);
-    List<UserAccount> findByIdContainsOrUsernameContainsOrDisplayNameContains(String id, String username, String displayName);
+    List<UserAccount> findByIdOrUsernameContainsOrDisplayNameContains(String id, String username, String displayName, Pageable pageable);
+    List<UserAccount> findByIdOrUsernameContainsOrDisplayNameContains(String id, String username, String displayName);
 
     List<UserAccount> findByAuthProvider(AuthProvider authProvider);
+
 }

@@ -80,6 +80,21 @@ public class GroupService {
         }
     }
 
+    public List<Group> findByRoleAndIdUser(String role,String idUser) {
+        List<Group> groups = new ArrayList<>();
+        try {
+            List<GroupMember> groupMembers = groupMemberRepository.findByRoleAndIdUser(role, idUser);
+            groupMembers.forEach(groupMember -> {
+                groups.add(groupRepository.findById(groupMember.getIdGroup()).orElse(new Group()));
+            });
+            LOGGER.info("get success.");
+            return groups;
+        } catch (Exception e) {
+            LOGGER.info("get fail cause:", e.getCause());
+            return groups;
+        }
+    }
+
     public List<PostInformation> getAllPostInGroupSelf(int page, int size) {
         List<PostInformation> postInformations = new ArrayList<>();
         try {
@@ -298,10 +313,12 @@ public class GroupService {
             if (gmc != null) {
                 //
                 groupMemberRepository.delete(gmc);
-                //update number membership when delete
-                Group group = groupRepository.findById(idGroup).orElse(null);
-                group.setNumberMembership(groupMemberRepository.findByIdGroup(idGroup).size());
-                groupRepository.save(group);
+                if(gmc.getStatus() == 1){
+                    //update number membership when delete
+                    Group group = groupRepository.findById(idGroup).orElse(null);
+                    group.setNumberMembership(groupMemberRepository.findByIdGroup(idGroup).size());
+                    groupRepository.save(group);
+                }
 
                 LOGGER.info("reject request success member: {}", gmc.getId());
                 return SUCCESS;
@@ -355,5 +372,9 @@ public class GroupService {
 
             return FAIL;
         }
+    }
+
+    void deleteById(String idGroup){
+        groupRepository.deleteById(idGroup);
     }
 }

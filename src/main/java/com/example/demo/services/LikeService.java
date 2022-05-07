@@ -49,4 +49,17 @@ public class LikeService {
         });
         return userAccountSettings;
     }
+
+    public void deleteByIdUSer(String id){
+        likeRepository.deleteByIdUser(id);
+    }
+
+    public List<Like> getByIdUser(String id){
+        return likeRepository.findByIdUser(id);
+    }
+
+    public Like findLikeByIdUserAndIdPost(String idUser,String idpost){
+       return likeRepository.findLikeByIdUserAndIdPost(idUser,idpost);
+    }
+
 }

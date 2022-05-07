@@ -73,4 +73,13 @@ public class HistorySearchUserService {
         }
     }
 
+    public String deleteByIdUser(String idUser){
+        try {
+            historySearchUserRepository.deleteByIdUser(idUser);
+            return SUCCESS;
+        }catch (Exception e){
+            return FAIL;
+        }
+    }
+
 }

@@ -1,24 +1,30 @@
 package com.example.demo.services;
 
+import com.example.demo.models.Like;
 import com.example.demo.models.Post;
 import com.example.demo.models.UserAccount;
 import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.adminModels.UserAccountProfile;
+import com.example.demo.models.comment.LikeComment;
 import com.example.demo.models.feedback.Feedback;
+import com.example.demo.models.group.Group;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.models.profile.Profile;
-import com.example.demo.repository.UserAccountRepository;
-import com.example.demo.repository.UserAccountSettingRepository;
+import com.example.demo.repository.*;
 import com.example.demo.utils.ConvertSHA1;
 import com.example.demo.utils.SortClassCustom;
 import com.example.demo.utils.UsernameFromJWT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,11 +48,39 @@ public class UserAccountSettingService {
     @Autowired
     private FollowService followService;
     @Autowired
+    private FollowRepository followRepository;
+    @Autowired
     private LikeService likeService;
     @Autowired
     private CommentService commentService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private FeedbackService feedbackService;
+    @Autowired
+    private HistorySearchUserService historySearchUserService;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private GroupMemberService groupMemberService;
+    @Autowired
+    private ActivityService activityService;
+    @Autowired
+    private StoryRepository storyRepository;
+    @Autowired
+    private ReportRepository reportRepository;
+    @Autowired
+    private SavedPostRepository savedPostRepository;
+    @Autowired
+    private LikeCommentRepository likeCommentRepository;
+    @Autowired
+    private ReplyCommentRepository replyCommentRepository;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserAccountSettingService.class);
 
     public UserAccountSetting findUserAccountSettingByUsername(String username) {
         return userAccountSettingRepository.findUserAccountSettingByUsername(username);
@@ -223,6 +257,109 @@ public class UserAccountSettingService {
             return userAccountProfiles;
         }catch (Exception e){
             return userAccountProfiles;
+        }
+    }
+
+
+    public String adminDeleteUser(String idUser) {
+        try {
+            UserAccount userAccount = userAccountService.findUserAccountById(idUser);
+            if(userAccount.getRoles().contains("ROLE_USER")){
+                //cap nhat lai so luong following cua nguoi khac
+                followService.findFollowByUserFollowing(idUser).forEach(following -> {
+                    UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(following.getUserCurrent());
+                    if(userAccountSetting!= null){
+                        userAccountSetting.setFollowing(userAccountSetting.getFollowing() - 1);
+                        userAccountSettingRepository.save(userAccountSetting);
+                    }
+                });
+
+                //cap nhat lai so luong follower cuar nguoi khac
+                followService.findFollowByUserCurrent(idUser).forEach(follower ->{
+                    UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(follower.getUserFollowing());
+                    if(userAccountSetting!=null){
+                        userAccountSetting.setFollowers(userAccountSetting.getFollowers() -1);
+                        userAccountSettingRepository.save(userAccountSetting);
+                    }
+                });
+
+
+                //
+                followRepository.deleteByUserCurrent(idUser);
+                followRepository.deleteByUserFollowing(idUser);
+
+
+                //xoa feedback
+                feedbackService.deleteByIdUser(idUser);
+
+                //xoa historySearchUser
+                historySearchUserService.deleteByIdUser(idUser);
+
+                //delete userAccount
+                userAccountService.delete(idUser);
+
+                //delete message
+                messageService.deleteBySender(idUser);
+                messageService.deleteByReceiver(idUser);
+
+                //xoa thong tin nhom va nhom quan ly
+                groupService.findByRoleAndIdUser("ADMIN",idUser).forEach(group -> {
+                    groupMemberService.deleteByIdGroup(group.getId());
+                    groupService.deleteById(group.getId());
+                });
+                groupService.findByRoleAndIdUser("MEMBER",idUser).forEach(group -> {
+                    groupService.rejectRequestJoinGroup(group.getId(),idUser);
+                });
+
+                //delete activity
+                activityService.deleteByIdCurrentUser(idUser);
+                activityService.deleteByIdInteractUser(idUser);
+
+                //delete story
+                storyRepository.deleteByIdUser(idUser);
+
+                //delete report
+                reportRepository.deleteByIdUser(idUser);
+
+                //delete like
+                List<Like> likes = likeService.getByIdUser(idUser);
+                likes.forEach(lk -> {
+                    Post post = postService.findPostByLikes(lk.getId());
+                    if(post != null){
+                        Like like =likeService.findLikeByIdUserAndIdPost(idUser,post.getId());
+                        if(like != null){
+                            post.getLikes().remove(like.getId());
+                            postRepository.save(post);
+                        }
+                    }
+                });
+                likeService.deleteByIdUSer(idUser);
+
+                //delete saved post
+                savedPostRepository.deleteByUserId(idUser);
+
+                //delete like comment
+                likeCommentRepository.deleteByIdUser(idUser);
+
+                //delete reply comment
+                replyCommentRepository.deleteByIdUser(idUser);
+
+                //delete all post
+                List<Post> posts =postRepository.findPostByUserId(idUser);
+                postRepository.findPostByUserId(idUser).forEach(post -> {
+                    postService.deletePost(post.getId());
+                });
+
+                userAccountSettingRepository.deleteById(idUser);
+
+
+                LOGGER.info("delete success user id: {} .",idUser);
+                return SUCCESS;
+            }
+           return FAIL;
+        } catch (Exception e) {
+            LOGGER.info("delete fails.");
+            return FAIL;
         }
     }
 

@@ -77,6 +77,15 @@ public class FeedbackService {
         }
     }
 
+    public String deleteByIdUser(String idUser){
+        try {
+            feedbackRepository.deleteByIdUser(idUser);
+            return SUCCESS;
+        }catch (Exception e){
+            return FAIL;
+        }
+    }
+
     public List<Feedback> filterByTime(long start,long end){
         List<Feedback> feedbacks = new ArrayList<>();
         try {

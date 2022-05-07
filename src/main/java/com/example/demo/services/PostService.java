@@ -9,11 +9,16 @@ import com.example.demo.models.group.GroupMember;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.repository.*;
 import com.example.demo.utils.SortClassCustom;
+import javafx.geometry.Pos;
+import org.omg.PortableServer.POA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -327,6 +332,18 @@ public class PostService {
         }
     }
 
+    public PostInformation adminGetPostInformation(String pId) {
+        Post post = postRepository.findPostById(pId);
+        if (post != null) {
+                UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
+                Group group = groupService.findById(post.getIdGroup());
+                return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group);
+        } else {
+            return new PostInformation(null, null, null, null);
+        }
+    }
+
+
     public List<PostInformation> getAllPostInformationFollowing(int page, int size) {
         List<PostInformation> postInformations = new ArrayList<>();
         try {
@@ -432,8 +449,9 @@ public class PostService {
             Post post = postRepository.findPostById(pId);
             //admin group xoa bai
             GroupMember groupMember = groupMemberRepository.findByIdGroupAndIdUser(post.getIdGroup(),userAccountService.getUID());
+            boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
-            if ((post != null && ( post.getUserId().equals(userAccountService.getUID()) || (groupMember != null && groupMember.getRole().equals("ADMIN")) ))) {
+            if ((post != null && ( post.getUserId().equals(userAccountService.getUID()) || (groupMember != null && groupMember.getRole().equals("ADMIN")) || isAdmin ))) {
                 //xoa trong story
                 storyRepository.deleteByIdPost(pId);
                 //xoa trong activity
@@ -550,5 +568,9 @@ public class PostService {
         }catch (Exception e){
             return blockPost;
         }
+    }
+
+    public Post findPostByLikes(String id){
+        return postRepository.findPostByLikes(id);
     }
 }

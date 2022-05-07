@@ -18,4 +18,6 @@ public interface PostRepository extends MongoRepository<Post,String> {
 
     List<Post> findByUserIdContainsOrId(String uId,String pId,Pageable pageable);
     List<Post> findByUserIdContainsOrId(String uId,String pId);
+
+    Post findPostByLikes(String idUSerLiked);
 }

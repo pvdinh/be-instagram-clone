@@ -102,4 +102,13 @@ public class ActivityService {
         }
     }
 
+    public void deleteByIdCurrentUser(String id){
+        activityRepository.deleteByIdCurrentUser(id);
+    }
+
+    public void deleteByIdInteractUser(String id){
+        activityRepository.deleteByIdInteractUser(id);
+    }
+
+
 }

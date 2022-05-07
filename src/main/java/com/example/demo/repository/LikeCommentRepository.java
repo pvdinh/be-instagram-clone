@@ -11,5 +11,6 @@ public interface LikeCommentRepository extends MongoRepository<LikeComment, Stri
     List<LikeComment> findByIdComment(String idComment);
     List<LikeComment> findByIdComment(String idComment, Pageable pageable);
     void deleteByIdComment(String idComment);
+    void deleteByIdUser(String idUser);
     LikeComment findByIdCommentAndIdUser(String idComment,String idUser);
 }

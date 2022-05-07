@@ -39,7 +39,9 @@ public class StoryService {
         List<Follow> follows = followService.findFollowByUserCurrent();
         follows.forEach(follow -> {
             UserAccountSetting userAccountSetting = userAccountSettingService.findUserAccountSettingById(follow.getUserFollowing());
-            userAccountSettings.add(userAccountSettingService.findUserAccountSettingById(follow.getUserFollowing()));
+            if(userAccountSetting != null){
+                userAccountSettings.add(userAccountSetting);
+            }
         });
         //--------------------------------------------
         userAccountSettings.forEach(userAccountSetting -> {
@@ -100,4 +102,5 @@ public class StoryService {
             return false;
         }
     }
+
 }

@@ -34,7 +34,7 @@ public class ManagePostController {
     @GetMapping("/{postId}/get")
     public BaseResponse getPostInformationOfUser(@PathVariable(name = "postId") String postId){
         try{
-            return new ResponseObject(HttpStatus.OK.value(),postService.getPostInformationOfUser(postId));
+            return new ResponseObject(HttpStatus.OK.value(),postService.adminGetPostInformation(postId));
         }catch (Exception e){
             return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
         }

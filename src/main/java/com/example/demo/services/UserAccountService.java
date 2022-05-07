@@ -125,7 +125,7 @@ public class UserAccountService implements UserDetailsService {
         try{
             Pageable pageable = PageRequest.of(page,size);
 
-            List<UserAccount> accounts = userAccountRepository.findByIdContainsOrUsernameContainsOrDisplayNameContains(search,search,search,pageable);
+            List<UserAccount> accounts = userAccountRepository.findByIdOrUsernameContainsOrDisplayNameContains(search,search,search,pageable);
 
 
             accounts.forEach(userAccount -> {
@@ -140,7 +140,7 @@ public class UserAccountService implements UserDetailsService {
     public List<UserAccount> findContainsByIdOrUsernameOrDisplayName(String search){
         List<UserAccount> userAccounts = new ArrayList<>();
         try{
-            userAccounts = userAccountRepository.findByIdContainsOrUsernameContainsOrDisplayNameContains(search,search,search);
+            userAccounts = userAccountRepository.findByIdOrUsernameContainsOrDisplayNameContains(search,search,search);
             return userAccounts;
         }catch (Exception e){
             return userAccounts;
@@ -155,5 +155,9 @@ public class UserAccountService implements UserDetailsService {
         }catch (Exception e){
             return userAccounts;
         }
+    }
+
+    public void delete(String idUser){
+        userAccountRepository.deleteById(idUser);
     }
 }

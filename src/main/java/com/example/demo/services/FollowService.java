@@ -61,6 +61,11 @@ public class FollowService {
     public List<Follow> findFollowByUserFollowing(String uFId){
         return followRepository.findFollowByUserFollowing(uFId);
     }
+
+    public List<Follow> findFollowByUserCurrent(String uFId){
+        return followRepository.findFollowByUserCurrent(uFId);
+    }
+
     public String insert(String id){
         try{
             followRepository.insert(new Follow("",id,id,System.currentTimeMillis()));

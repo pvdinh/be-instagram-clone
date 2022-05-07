@@ -11,5 +11,6 @@ public interface StoryRepository extends MongoRepository<Story,String> {
     List<Story> findStoryByIdPost(String idPost);
     Story findStoryById(String idStory);
     void deleteByIdPost(String idPost);
+    void deleteByIdUser(String idUser);
 
 }

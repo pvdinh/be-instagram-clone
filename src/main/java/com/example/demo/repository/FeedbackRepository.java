@@ -11,6 +11,8 @@ public interface FeedbackRepository extends MongoRepository<Feedback,String> {
     List<Feedback> findByIdUserContainsOrSubjectContainsOrContentContains(String idUser,String subject,String content, Pageable pageable);
     List<Feedback> findByIdUserContainsOrSubjectContainsOrContentContains(String idUser,String subject,String content);
 
+    void deleteByIdUser(String idUser);
+
     @Query("{'dateCreated': {$gte: ?0, $lte:?1 }}")
     List<Feedback> filterByTime(Long start,Long end);
     @Query("{'dateCreated': {$gte: ?0, $lte:?1 }}")

@@ -58,6 +58,16 @@ public class ManageUserController {
         }
     }
 
+    //http://localhost:8080/api/v1/admin/manage-user/{uId}/delete
+    @DeleteMapping("/{uId}/delete")
+    public BaseResponse delete(@PathVariable(name = "uId") String uId) {
+        try {
+            return new ResponseMessage(HttpStatus.OK.value(), userAccountSettingService.adminDeleteUser(uId));
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
     //http://localhost:8080/api/v1/admin/manage-user/filter
     @GetMapping("/filter")
     public BaseResponse filterByTime(@RequestParam(name = "start") String start, @RequestParam(name = "end") String end, @RequestParam(name = "page") Optional<Integer> page, @RequestParam(name = "size") Optional<Integer> size) {
