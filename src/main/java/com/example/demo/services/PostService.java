@@ -447,9 +447,13 @@ public class PostService {
     public String deletePost(String pId) {
         try {
             Post post = postRepository.findPostById(pId);
-            //admin group xoa bai
-            GroupMember groupMember = groupMemberRepository.findByIdGroupAndIdUser(post.getIdGroup(),userAccountService.getUID());
-            boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            GroupMember groupMember = new GroupMember();
+            boolean isAdmin = false;
+            if(post != null){
+                //admin group xoa bai
+                groupMember = groupMemberRepository.findByIdGroupAndIdUser(post.getIdGroup(),userAccountService.getUID());
+                isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            }
 
             if ((post != null && ( post.getUserId().equals(userAccountService.getUID()) || (groupMember != null && groupMember.getRole().equals("ADMIN")) || isAdmin ))) {
                 //xoa trong story

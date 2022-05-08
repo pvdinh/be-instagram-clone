@@ -43,14 +43,16 @@ public class CommentService {
     }
     public String addCommentInPost(Comment comment,String usernameCurrentUser){
         try {
-            commentRepository.insert(comment);
-            //Thêm vào activity
             Post post = postService.findByPostId(comment.getIdPost());
-            UserAccount userAccount = userAccountService.findUserAccountByUsername(usernameCurrentUser);
-            if(!userAccount.getId().equals(post.getUserId())){
-                activityService.insert(new Activity(userAccount.getId(),post.getUserId(),post.getId(),"comment",0,System.currentTimeMillis()),userAccount.getId());
-            }
-            return SUCCESS;
+            if(post != null){
+                commentRepository.insert(comment);
+                //Thêm vào activity
+                UserAccount userAccount = userAccountService.findUserAccountByUsername(usernameCurrentUser);
+                if(!userAccount.getId().equals(post.getUserId())){
+                    activityService.insert(new Activity(userAccount.getId(),post.getUserId(),post.getId(),"comment",0,System.currentTimeMillis()),userAccount.getId());
+                }
+                return SUCCESS;
+            } return FAIL;
         }catch (Exception e){
             return FAIL;
         }
@@ -75,18 +77,20 @@ public class CommentService {
             //muốn xoá được bình luận hoặc là người đăng bài, hoặc là người bình luận
             //tim xem ai la nguoi dang bai
             Post post = postService.findByPostId(comment.getIdPost());
-            //xac nhan xem binh luan do la cua ai
-            UserAccount userAccount = userAccountService.findUserAccountByUsername(usernameCurrentUser);
-            if(comment.getIdUser().equals(userAccount.getId()) || userAccount.getId().equals(post.getUserId())){
-                commentRepository.deleteById(comment.getId());
+            if(post != null){
+                //xac nhan xem binh luan do la cua ai
+                UserAccount userAccount = userAccountService.findUserAccountByUsername(usernameCurrentUser);
+                if(comment.getIdUser().equals(userAccount.getId()) || userAccount.getId().equals(post.getUserId())){
+                    commentRepository.deleteById(comment.getId());
 
-                //khi mà post không còn bình luận nào thì xoá activity
-                List<Comment> commentList = commentRepository.findCommentByIdUserAndIdPost(comment.getIdUser(),post.getId());
-                if(commentList.size() == 0){
-                    Activity activity= activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(comment.getIdUser(),post.getUserId(),"comment",post.getId());
-                    activityService.delete(activity,userAccount.getId());
-                }
-                return SUCCESS;
+                    //khi mà post không còn bình luận nào thì xoá activity
+                    List<Comment> commentList = commentRepository.findCommentByIdUserAndIdPost(comment.getIdUser(),post.getId());
+                    if(commentList.size() == 0){
+                        Activity activity= activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(comment.getIdUser(),post.getUserId(),"comment",post.getId());
+                        activityService.delete(activity,userAccount.getId());
+                    }
+                    return SUCCESS;
+                }else return FAIL;
             }else return FAIL;
         }catch (Exception e){
             return FAIL;
