@@ -25,6 +25,8 @@ public class ReplyCommentService {
     @Autowired
     private ActivityService activityService;
     @Autowired
+    private ActivityRepository activityRepository;
+    @Autowired
     private PostRepository postRepository;
     @Autowired
     private PostService postService;
@@ -129,6 +131,23 @@ public class ReplyCommentService {
             return SUCCESS;
         } else {
             return FAIL;
+        }
+    }
+
+    public List<String> getListUserLikeOrReplyComment(Activity activity,String type){
+        List<String> stringList = new ArrayList<>();
+        try {
+            Post post = postRepository.findPostById(activity.getIdPost());
+            if(post!=null){
+                List<Activity> activities = activityRepository.findByIdInteractUserAndIdPostAndTypeActivity(activity.getIdInteractUser(),post.getId(),type);
+                activities.forEach(ac -> {
+                    UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(ac.getIdCurrentUser());
+                    stringList.add(userAccountSetting.getUsername());
+                });
+            }
+            return stringList;
+        }catch (Exception e){
+            return stringList;
         }
     }
 }

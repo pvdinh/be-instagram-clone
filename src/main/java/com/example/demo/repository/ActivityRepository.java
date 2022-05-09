@@ -13,6 +13,7 @@ public interface ActivityRepository extends MongoRepository<Activity,String> {
     Activity findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(String idCurrentUser,String idInteractUser,String typeActivity);
     Activity findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(String idCurrentUser,String idInteractUser,String typeActivity,String idPost);
     List<Activity> findByIdInteractUser(String idInteractUser, Pageable pageable);
+    List<Activity> findByIdInteractUserAndIdPostAndTypeActivity(String idInteractUser,String idPost,String type);
     void deleteByIdPost(String idPost);
     void deleteByIdCurrentUser(String idCurrentUser);
     void deleteByIdInteractUser(String idInteractUser);

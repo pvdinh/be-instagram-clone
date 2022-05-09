@@ -310,7 +310,7 @@ public class GroupService {
     public String rejectRequestJoinGroup(String idGroup,String idUser) {
         try {
             GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(idGroup, idUser);
-            if (gmc != null) {
+            if (gmc != null && !gmc.getRole().equals("ADMIN")) {
                 //
                 groupMemberRepository.delete(gmc);
                 if(gmc.getStatus() == 1){

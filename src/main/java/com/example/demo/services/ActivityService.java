@@ -10,7 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.sql.Struct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -30,6 +32,8 @@ public class ActivityService {
     private LikeService likeService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private ReplyCommentService replyCommentService;
 
 
     private final String SUCCESS = "success";
@@ -42,14 +46,39 @@ public class ActivityService {
             Pageable pageable = PageRequest.of(page,size, Sort.by("dateActivity").descending());
             activities=activityRepository.findByIdInteractUser(userAccountService.getUID(),pageable);
             activities.forEach(activity -> {
-                activityInformations.add(new ActivityInformation(activity
-                        ,userAccountSettingService.findUserAccountSettingById(activity.getIdCurrentUser())
-                        ,postService.findByPostId(activity.getIdPost()),likeService.getListUserLikedPost(activity.getIdPost()),commentService.getListUserCommentedPost(activity.getIdPost())));
+                if(!checkActivityExists(activity,activityInformations)){
+                    final String likeComment = "likeComment";
+                    final String replyComment = "replyComment";
+                    if(activity.getTypeActivity().equals(likeComment)){
+                        activityInformations.add(new ActivityInformation(activity
+                                ,userAccountSettingService.findUserAccountSettingById(activity.getIdCurrentUser())
+                                ,postService.findByPostId(activity.getIdPost()), Collections.emptyList(),Collections.emptyList(),replyCommentService.getListUserLikeOrReplyComment(activity,likeComment),Collections.emptyList()));
+                    }else if(activity.getTypeActivity().equals(replyComment)){
+                        activityInformations.add(new ActivityInformation(activity
+                                ,userAccountSettingService.findUserAccountSettingById(activity.getIdCurrentUser())
+                                ,postService.findByPostId(activity.getIdPost()), Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),replyCommentService.getListUserLikeOrReplyComment(activity,replyComment)));
+                    }
+                    else {
+                        activityInformations.add(new ActivityInformation(activity
+                                ,userAccountSettingService.findUserAccountSettingById(activity.getIdCurrentUser())
+                                ,postService.findByPostId(activity.getIdPost()),likeService.getListUserLikedPost(activity.getIdPost()),commentService.getListUserCommentedPost(activity.getIdPost())));
+                    }
+                }
             });
             return activityInformations;
         }catch (Exception e){
             return activityInformations;
         }
+    }
+
+    public boolean checkActivityExists(Activity activity,List<ActivityInformation> activityInformations){
+        for (int i = 0; i < activityInformations.size(); i++) {
+            if(activity.getIdPost() == null || activityInformations.get(i).getPost() == null) return false;
+            if(activity.getIdPost().equals(activityInformations.get(i).getPost().getId()) && activity.getTypeActivity().equals(activityInformations.get(i).getActivity().getTypeActivity())){
+                return true;
+            }
+        }
+        return false;
     }
 
     public Activity findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(String idCurrentUser,String idInteractUser,String typeActivity){
