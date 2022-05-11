@@ -97,7 +97,7 @@ public class ActivityService {
             }else {
                 ac = findActivityByIdCurrentUserAndIdInteractUserAndTypeActivity(activity.getIdCurrentUser(),activity.getIdInteractUser(),activity.getTypeActivity());
             }
-            if(ac == null && idCurrentUser.equals(activity.getIdCurrentUser())){
+            if(ac == null){
                 activityRepository.insert(activity);
             }else {
                 ac.setDateActivity(System.currentTimeMillis());
@@ -111,9 +111,7 @@ public class ActivityService {
 
     public String delete(Activity activity,String idCurrentUser){
         try {
-            if(idCurrentUser.equals(activity.getIdInteractUser())){
-                activityRepository.delete(activity);
-            }else return FAIL;
+            activityRepository.delete(activity);
             return SUCCESS;
         }catch (Exception e){
             return FAIL;

@@ -413,7 +413,7 @@ public class PostService {
             postRepository.save(post);
             likeRepository.delete(like);
             //xoá khỏi activity
-            if (uId != post.getUserId()) {
+            if (!uId.equals(post.getUserId())) {
                 Activity activity = activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(userAccountService.getUID(), post.getUserId(), "like", post.getId());
                 activityService.delete(activity,userAccountService.getUID());
             }
