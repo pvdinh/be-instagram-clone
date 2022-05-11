@@ -139,5 +139,15 @@ public class ManagePostController {
         }
     }
 
+    //http://localhost:8080/api/v1/admin/manage-post/delete
+    @DeleteMapping("/{id}/delete")
+    public BaseResponse deletePost(@PathVariable(name = "id") String id){
+        try {
+            return new ResponseObject(HttpStatus.OK.value(),postService.deletePost(id));
+        }catch (Exception e){
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "error");
+        }
+    }
+
 
 }
