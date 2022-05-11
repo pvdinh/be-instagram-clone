@@ -107,7 +107,7 @@ public class ReplyCommentService {
             Optional<ReplyComment> commentO = replyCommentRepository.findById(idReplyComment);
             ReplyComment comment = commentO.orElse(new ReplyComment());
             Post post = postRepository.findPostById(comment.getIdPost());
-            if(!idUser.equals(post.getUserId()) && !idUser.equals(comment.getIdUser())){
+            if(!idUser.equals(comment.getIdUser())){
                 activityService.insert(new Activity(userAccountService.getUID(),comment.getIdUser(),post.getId(),"likeReplyComment",0,System.currentTimeMillis()),userAccountService.getUID());
             }
             return SUCCESS;

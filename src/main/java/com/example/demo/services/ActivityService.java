@@ -49,6 +49,7 @@ public class ActivityService {
                 if(!checkActivityExists(activity,activityInformations)){
                     final String likeComment = "likeComment";
                     final String replyComment = "replyComment";
+                    final String likeReplyComment = "likeReplyComment";
                     if(activity.getTypeActivity().equals(likeComment)){
                         activityInformations.add(new ActivityInformation(activity
                                 ,userAccountSettingService.findUserAccountSettingById(activity.getIdCurrentUser())
@@ -57,6 +58,10 @@ public class ActivityService {
                         activityInformations.add(new ActivityInformation(activity
                                 ,userAccountSettingService.findUserAccountSettingById(activity.getIdCurrentUser())
                                 ,postService.findByPostId(activity.getIdPost()), Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),replyCommentService.getListUserLikeOrReplyComment(activity,replyComment)));
+                    }else if(activity.getTypeActivity().equals(likeReplyComment)){
+                        activityInformations.add(new ActivityInformation(activity
+                                ,userAccountSettingService.findUserAccountSettingById(activity.getIdCurrentUser())
+                                ,postService.findByPostId(activity.getIdPost()), Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),replyCommentService.getListUserLikeOrReplyComment(activity,likeReplyComment)));
                     }
                     else {
                         activityInformations.add(new ActivityInformation(activity

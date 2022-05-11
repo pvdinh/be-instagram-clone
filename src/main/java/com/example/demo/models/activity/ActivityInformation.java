@@ -13,6 +13,7 @@ public class ActivityInformation {
     private List<String> comments;
     private List<String> likeComments;
     private List<String> replyComments;
+    private List<String> likeReplyComments;
 
     public ActivityInformation() {
         super();
@@ -34,6 +35,25 @@ public class ActivityInformation {
         this.comments = comments;
         this.likeComments = likeComments;
         this.replyComments = replyComments;
+    }
+
+    public ActivityInformation(Activity activity, UserAccountSetting userAccountSetting, Post post, List<String> likes, List<String> comments, List<String> likeComments, List<String> replyComments, List<String> likeReplyComments) {
+        this.activity = activity;
+        this.userAccountSetting = userAccountSetting;
+        this.post = post;
+        this.likes = likes;
+        this.comments = comments;
+        this.likeComments = likeComments;
+        this.replyComments = replyComments;
+        this.likeReplyComments = likeReplyComments;
+    }
+
+    public List<String> getLikeReplyComments() {
+        return likeReplyComments;
+    }
+
+    public void setLikeReplyComments(List<String> likeReplyComments) {
+        this.likeReplyComments = likeReplyComments;
     }
 
     public Activity getActivity() {
