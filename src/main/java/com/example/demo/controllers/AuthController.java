@@ -29,6 +29,7 @@ public class AuthController {
         userAccount.setPassword(ConvertSHA1.convertSHA1(userAccount.getPassword()));
         userAccount.setAuthProvider(AuthProvider.local);
         userAccount.setRoles(new ArrayList<String>(Collections.singleton("ROLE_USER")));
+        userAccount.setDateCreated(System.currentTimeMillis());
         String resMess = userAccountService.addUserAccount(userAccount);
         if (resMess.equalsIgnoreCase("success")) {
             UserAccount uAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(userAccount.getUsername());

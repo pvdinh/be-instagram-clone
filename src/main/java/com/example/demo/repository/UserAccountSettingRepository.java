@@ -8,13 +8,10 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
-public interface UserAccountSettingRepository extends MongoRepository<UserAccountSetting,String> {
+public interface UserAccountSettingRepository extends MongoRepository<UserAccountSetting, String> {
     UserAccountSetting findUserAccountSettingByUsername(String username);
-    UserAccountSetting findUserAccountSettingById(String id);
-    List<UserAccountSetting> findUserAccountSettingsByUsernameContains(String search);
 
-    @Query("{'dateCreated': {$gte: ?0, $lte:?1 }}")
-    List<UserAccountSetting> filterByTime(Long start, Long end);
-    @Query("{'dateCreated': {$gte: ?0, $lte:?1 }}")
-    List<UserAccountSetting> filterByTime(Long start, Long end, Pageable pageable);
+    UserAccountSetting findUserAccountSettingById(String id);
+
+    List<UserAccountSetting> findUserAccountSettingsByUsernameContains(String search);
 }

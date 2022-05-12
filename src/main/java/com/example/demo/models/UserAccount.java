@@ -20,19 +20,23 @@ public class UserAccount {
     private AuthProvider authProvider;
     private String displayName;
     private List<String> roles;
+    private long dateCreated;
 
     public UserAccount() {
         super();
     }
 
-    public UserAccount(String id, String username, String password, String email, String phoneNumber, AuthProvider authProvider, List<String> role) {
+
+    public UserAccount(String id, String username, String password, String email, String phoneNumber, AuthProvider authProvider, String displayName, List<String> roles, long dateCreated) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.authProvider = authProvider;
-        this.roles=role;
+        this.displayName = displayName;
+        this.roles = roles;
+        this.dateCreated = dateCreated;
     }
 
     public String getId() {
@@ -97,5 +101,13 @@ public class UserAccount {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public long getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(long dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }

@@ -38,17 +38,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // đăng nhập thành công , lưu thông tin user vào csdl
         CustomOauth2User customOauth2User = (CustomOauth2User) authentication.getPrincipal();
         UserAccount userAccount = new UserAccount(customOauth2User.getId()
-                ,customOauth2User.getName()
+                , customOauth2User.getName()
                 , ConvertSHA1.convertSHA1(customOauth2User.getId())
-                ,customOauth2User.getEmail(),null
-                , AuthProvider.facebook, new ArrayList<String>(Collections.singleton("ROLE_USER")));
+                , customOauth2User.getEmail(), ""
+                , AuthProvider.facebook,
+                customOauth2User.getName(), new ArrayList<String>(Collections.singleton("ROLE_USER")), System.currentTimeMillis());
         UserAccount uc = userAccountService.findUserAccountById(customOauth2User.getId());
-        if(uc == null){
+        if (uc == null) {
             userAccountService.addUserAccount(userAccount);
             UserAccountSetting userAccountSetting = new UserAccountSetting(customOauth2User.getId()
-                    ,customOauth2User.getName(),"",1,1,0
-                    ,customOauth2User.getPicture()
-                    ,customOauth2User.getName(),"",System.currentTimeMillis());
+                    , customOauth2User.getName(), "", 1, 1, 0
+                    , customOauth2User.getPicture()
+                    , customOauth2User.getName(), "", System.currentTimeMillis());
             userAccountSettingService.addUserAccountSetting(userAccountSetting);
         }
 
@@ -63,7 +64,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String redirectUri = CookieUtils.getCook(request, HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME);
-        return redirectUri+"/"+tokenProvider.createToken(authentication);
+        return redirectUri + "/" + tokenProvider.createToken(authentication);
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

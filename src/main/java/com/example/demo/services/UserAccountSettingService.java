@@ -106,7 +106,7 @@ public class UserAccountSettingService {
             return SUCCESS;
         } catch (Exception e) {
             //Khi tài khoản đã tồn tại , tiến hành update lại các thông tin ngoại trừ thông tin về posts, following, follower
-            UserAccountSetting uAs=userAccountSettingRepository.findUserAccountSettingById(userAccountSetting.getId());
+            UserAccountSetting uAs = userAccountSettingRepository.findUserAccountSettingById(userAccountSetting.getId());
             userAccountSetting.setPosts(uAs.getPosts());
             userAccountSetting.setFollowing(uAs.getFollowing());
             userAccountSetting.setFollowers(uAs.getFollowers());
@@ -124,9 +124,9 @@ public class UserAccountSettingService {
             posts.forEach(post -> {
                 List<String> listLikeString = likeService.getListUserLikedPost(post.getId());
                 int numberOfComments = commentService.findCommentByIdPost(post.getId()).size();
-                if(post.getUserId().equals(userAccountService.getUID())){
+                if (post.getUserId().equals(userAccountService.getUID())) {
                     postDetails.add(new PostDetail(post, numberOfComments, listLikeString));
-                }else if(post.getPrivacy() == 0){
+                } else if (post.getPrivacy() == 0) {
                     postDetails.add(new PostDetail(post, numberOfComments, listLikeString));
                 }
             });
@@ -168,11 +168,11 @@ public class UserAccountSettingService {
             userAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(userAccountService.getUID());
             userAccount.setEmail(email);
             userAccount.setPhoneNumber(phoneNumber);
-            if(userAccount.getUsername().equals(username)){
+            if (userAccount.getUsername().equals(username)) {
                 userAccount.setUsername(username);
                 userAccountRepository.save(userAccount);
                 return PROFILE_SAVED;
-            }else {
+            } else {
                 userAccount.setUsername(username);
                 userAccountRepository.save(userAccount);
                 return CHANGED_USERNAME;
@@ -208,11 +208,11 @@ public class UserAccountSettingService {
         String newPassword = ConvertSHA1.convertSHA1(data.get("newPassword"));
         try {
             UserAccount userAccount = userAccountService.findUserAccountByUsernameOrEmailOrPhoneNumberOrId(userAccountService.getUID());
-            if(oldPassword.equals(userAccount.getPassword())){
+            if (oldPassword.equals(userAccount.getPassword())) {
                 userAccount.setPassword(newPassword);
                 userAccountRepository.save(userAccount);
                 return CHANGED_PASSWORD;
-            }else {
+            } else {
                 return PASSWORD_INCORRECT;
             }
         } catch (Exception e) {
@@ -224,11 +224,11 @@ public class UserAccountSettingService {
         String profilePhoto = data.get("profilePhoto");
         try {
             UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(userAccountService.getUID());
-            if(userAccountSetting != null){
+            if (userAccountSetting != null) {
                 userAccountSetting.setProfilePhoto(profilePhoto);
                 userAccountSettingRepository.save(userAccountSetting);
                 return SUCCESS;
-            }else {
+            } else {
                 return FAIL;
             }
         } catch (Exception e) {
@@ -236,26 +236,36 @@ public class UserAccountSettingService {
         }
     }
 
-    public List<UserAccountSetting> filterByTime(long start, long end){
-        List<UserAccountSetting> userAccountSettings = new ArrayList<>();
+    public List<UserAccount> filterByTime(long start, long end, String email, String phone) {
+        List<UserAccount> userAccountSettings = new ArrayList<>();
         try {
-            userAccountSettings = userAccountSettingRepository.filterByTime(start,end);
+            if (start == 0 || end == 0) {
+                userAccountSettings = userAccountRepository.filterByTimePhoneEmail(new Long(0), System.currentTimeMillis(), phone, email);
+            } else {
+                userAccountSettings = userAccountRepository.filterByTimePhoneEmail(start, end, phone, email);
+            }
             return userAccountSettings;
-        }catch (Exception e){
+        } catch (Exception e) {
             return userAccountSettings;
         }
     }
 
 
-    public List<UserAccountProfile> filterByTimePageable(long start,long end,int page,int size){
+    public List<UserAccountProfile> filterByTimePageable(long start, long end, int page, int size, String email, String phone) {
         List<UserAccountProfile> userAccountProfiles = new ArrayList<>();
         try {
-            Pageable pageable= PageRequest.of(page,size, Sort.by("dateCreated").descending());
-            userAccountSettingRepository.filterByTime(start,end,pageable).forEach(userAccountSetting -> {
-                userAccountProfiles.add(new UserAccountProfile(userAccountService.findUserAccountById(userAccountSetting.getId()),userAccountSetting));
-            });
+            Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+            if (start == 0 || end == 0) {
+                userAccountRepository.filterByTimePhoneEmail(new Long(0), System.currentTimeMillis(), phone, email, pageable).forEach(userAccount -> {
+                    userAccountProfiles.add(new UserAccountProfile(userAccount, userAccountSettingRepository.findUserAccountSettingById(userAccount.getId())));
+                });
+            } else {
+                userAccountRepository.filterByTimePhoneEmail(start, end, phone, email, pageable).forEach(userAccount -> {
+                    userAccountProfiles.add(new UserAccountProfile(userAccount, userAccountSettingRepository.findUserAccountSettingById(userAccount.getId())));
+                });
+            }
             return userAccountProfiles;
-        }catch (Exception e){
+        } catch (Exception e) {
             return userAccountProfiles;
         }
     }
@@ -264,21 +274,21 @@ public class UserAccountSettingService {
     public String adminDeleteUser(String idUser) {
         try {
             UserAccount userAccount = userAccountService.findUserAccountById(idUser);
-            if(userAccount.getRoles().contains("ROLE_USER")){
+            if (userAccount.getRoles().contains("ROLE_USER")) {
                 //cap nhat lai so luong following cua nguoi khac
                 followService.findFollowByUserFollowing(idUser).forEach(following -> {
                     UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(following.getUserCurrent());
-                    if(userAccountSetting!= null){
+                    if (userAccountSetting != null) {
                         userAccountSetting.setFollowing(userAccountSetting.getFollowing() - 1);
                         userAccountSettingRepository.save(userAccountSetting);
                     }
                 });
 
                 //cap nhat lai so luong follower cuar nguoi khac
-                followService.findFollowByUserCurrent(idUser).forEach(follower ->{
+                followService.findFollowByUserCurrent(idUser).forEach(follower -> {
                     UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(follower.getUserFollowing());
-                    if(userAccountSetting!=null){
-                        userAccountSetting.setFollowers(userAccountSetting.getFollowers() -1);
+                    if (userAccountSetting != null) {
+                        userAccountSetting.setFollowers(userAccountSetting.getFollowers() - 1);
                         userAccountSettingRepository.save(userAccountSetting);
                     }
                 });
@@ -303,12 +313,12 @@ public class UserAccountSettingService {
                 messageService.deleteByReceiver(idUser);
 
                 //xoa thong tin nhom va nhom quan ly
-                groupService.findByRoleAndIdUser("ADMIN",idUser).forEach(group -> {
+                groupService.findByRoleAndIdUser("ADMIN", idUser).forEach(group -> {
                     groupMemberService.deleteByIdGroup(group.getId());
                     groupService.deleteById(group.getId());
                 });
-                groupService.findByRoleAndIdUser("MEMBER",idUser).forEach(group -> {
-                    groupService.rejectRequestJoinGroup(group.getId(),idUser);
+                groupService.findByRoleAndIdUser("MEMBER", idUser).forEach(group -> {
+                    groupService.rejectRequestJoinGroup(group.getId(), idUser);
                 });
 
                 //delete activity
@@ -325,9 +335,9 @@ public class UserAccountSettingService {
                 List<Like> likes = likeService.getByIdUser(idUser);
                 likes.forEach(lk -> {
                     Post post = postService.findPostByLikes(lk.getId());
-                    if(post != null){
-                        Like like =likeService.findLikeByIdUserAndIdPost(idUser,post.getId());
-                        if(like != null){
+                    if (post != null) {
+                        Like like = likeService.findLikeByIdUserAndIdPost(idUser, post.getId());
+                        if (like != null) {
                             post.getLikes().remove(like.getId());
                             postRepository.save(post);
                         }
@@ -345,7 +355,7 @@ public class UserAccountSettingService {
                 replyCommentRepository.deleteByIdUser(idUser);
 
                 //delete all post
-                List<Post> posts =postRepository.findPostByUserId(idUser);
+                List<Post> posts = postRepository.findPostByUserId(idUser);
                 postRepository.findPostByUserId(idUser).forEach(post -> {
                     postService.deletePost(post.getId());
                 });
@@ -353,10 +363,10 @@ public class UserAccountSettingService {
                 userAccountSettingRepository.deleteById(idUser);
 
 
-                LOGGER.info("delete success user id: {} .",idUser);
+                LOGGER.info("delete success user id: {} .", idUser);
                 return SUCCESS;
             }
-           return FAIL;
+            return FAIL;
         } catch (Exception e) {
             LOGGER.info("delete fails.");
             return FAIL;
