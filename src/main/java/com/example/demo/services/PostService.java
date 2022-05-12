@@ -28,6 +28,7 @@ import java.util.List;
 import com.mongodb.client.*;
 
 import java.util.Arrays;
+
 import org.bson.Document;
 
 @Service
@@ -84,23 +85,23 @@ public class PostService {
         return postRepository.findPostById(pId);
     }
 
-    public List<Post> findContainsByUserIdOrIdPageable(String search,int page,int size){
+    public List<Post> findContainsByUserIdOrIdPageable(String search, int page, int size) {
         List<Post> posts = findAll();
         try {
-            Pageable pageable = PageRequest.of(page,size, Sort.by("dateCreated").descending());
-            posts = postRepository.findByUserIdContainsOrId(search,search,pageable);
+            Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+            posts = postRepository.findByUserIdContainsOrId(search, search, pageable);
             return posts;
-        }catch (Exception e){
+        } catch (Exception e) {
             return posts;
         }
     }
 
-    public List<Post> findContainsByUserIdOrId(String search){
+    public List<Post> findContainsByUserIdOrId(String search) {
         List<Post> posts = new ArrayList<>();
         try {
-            posts = postRepository.findByUserIdContainsOrId(search,search);
+            posts = postRepository.findByUserIdContainsOrId(search, search);
             return posts;
-        }catch (Exception e){
+        } catch (Exception e) {
             return posts;
         }
     }
@@ -136,7 +137,7 @@ public class PostService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public Post getTop1Like(){
+    public Post getTop1Like() {
         Post post = new Post();
         MongoCollection<Document> collection = mongoTemplate.getCollection("post");
 
@@ -159,7 +160,7 @@ public class PostService {
                                 .append("privacy", 0L)),
                 new Document("$limit", 1L)));
         MongoCursor<Document> mongoCursor = result.iterator();
-        while (mongoCursor.hasNext()){
+        while (mongoCursor.hasNext()) {
             Document next = mongoCursor.next();
             String id = next.get("_id").toString();
             String caption = next.get("caption").toString();
@@ -169,14 +170,14 @@ public class PostService {
             String type = next.get("type").toString();
             Object o = next.get("videoPath");
             String videoPath = "";
-            if(o != null) videoPath = o.toString();
+            if (o != null) videoPath = o.toString();
             long dateCreated = Long.parseLong(next.get("dateCreated").toString());
-            post = new Post(id,caption,imagePath,tag,userId,dateCreated,Collections.emptyList(),type,videoPath);
+            post = new Post(id, caption, imagePath, tag, userId, dateCreated, Collections.emptyList(), type, videoPath);
         }
         return post;
     }
 
-    public Post getTop1Comment(){
+    public Post getTop1Comment() {
         Post post = null;
         MongoCollection<Document> collection = mongoTemplate.getCollection("post");
 
@@ -209,7 +210,7 @@ public class PostService {
                                 .append("privacy", 0L)),
                 new Document("$limit", 1L)));
         MongoCursor<Document> mongoCursor = result.iterator();
-        while (mongoCursor.hasNext()){
+        while (mongoCursor.hasNext()) {
             Document next = mongoCursor.next();
             String id = next.get("_id").toString();
             String caption = next.get("caption").toString();
@@ -219,14 +220,14 @@ public class PostService {
             String type = next.get("type").toString();
             Object o = next.get("videoPath");
             String videoPath = "";
-            if(o != null) videoPath = o.toString();
+            if (o != null) videoPath = o.toString();
             long dateCreated = Long.parseLong(next.get("dateCreated").toString());
-            post = new Post(id,caption,imagePath,tag,userId,dateCreated,Collections.emptyList(),type,videoPath);
+            post = new Post(id, caption, imagePath, tag, userId, dateCreated, Collections.emptyList(), type, videoPath);
         }
         return post;
     }
 
-    public Post getTop1Save(){
+    public Post getTop1Save() {
         Post post = null;
         MongoCollection<Document> collection = mongoTemplate.getCollection("post");
 
@@ -249,7 +250,7 @@ public class PostService {
                                 .append("privacy", 0L)),
                 new Document("$limit", 1L)));
         MongoCursor<Document> mongoCursor = result.iterator();
-        while (mongoCursor.hasNext()){
+        while (mongoCursor.hasNext()) {
             Document next = mongoCursor.next();
             String id = next.get("_id").toString();
             String caption = next.get("caption").toString();
@@ -259,14 +260,14 @@ public class PostService {
             String type = next.get("type").toString();
             Object o = next.get("videoPath");
             String videoPath = "";
-            if(o != null) videoPath = o.toString();
+            if (o != null) videoPath = o.toString();
             long dateCreated = Long.parseLong(next.get("dateCreated").toString());
-            post = new Post(id,caption,imagePath,tag,userId,dateCreated,Collections.emptyList(),type,videoPath);
+            post = new Post(id, caption, imagePath, tag, userId, dateCreated, Collections.emptyList(), type, videoPath);
         }
         return post;
     }
 
-    public Post getTop1Popular(){
+    public Post getTop1Popular() {
         Post post = null;
         List<PostDetail> postDetails = new ArrayList<>();
         List<Post> posts = postRepository.findAll();
@@ -275,8 +276,8 @@ public class PostService {
             postDetails.add(new PostDetail(p, comments.size(), Collections.emptyList()));
         });
         postDetails.sort(new SortClassCustom.PostByPopular());
-        for(int i =0; i < postDetails.size(); i++){
-            if(postDetails.get(i).getPost().getIsBlock() != 1){
+        for (int i = 0; i < postDetails.size(); i++) {
+            if (postDetails.get(i).getPost().getIsBlock() != 1) {
                 post = postDetails.get(i).getPost();
                 break;
             }
@@ -297,7 +298,7 @@ public class PostService {
                 return postDetails;
             } else if (postDetails.size() < size && page >= 1) {
                 return Collections.emptyList();
-            }else if (postDetails.size() < ((page * size) + size)) {
+            } else if (postDetails.size() < ((page * size) + size)) {
                 return postDetails.subList(page * size, postDetails.size());
             } else return postDetails.subList(page * size, (page * size) + size);
         } catch (Exception e) {
@@ -316,12 +317,12 @@ public class PostService {
     public PostInformation getPostInformationOfUser(String pId) {
         Post post = postRepository.findPostById(pId);
         if (post != null) {
-            if(post.getUserId().equals(userAccountService.getUID())){
+            if (post.getUserId().equals(userAccountService.getUID())) {
                 UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
                 Group group = groupService.findById(post.getIdGroup());
                 return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group);
             }
-            if(post.getPrivacy() == 0){
+            if (post.getPrivacy() == 0) {
                 UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
                 Group group = groupService.findById(post.getIdGroup());
                 return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group);
@@ -335,9 +336,9 @@ public class PostService {
     public PostInformation adminGetPostInformation(String pId) {
         Post post = postRepository.findPostById(pId);
         if (post != null) {
-                UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
-                Group group = groupService.findById(post.getIdGroup());
-                return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group);
+            UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(post.getUserId());
+            Group group = groupService.findById(post.getIdGroup());
+            return new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group);
         } else {
             return new PostInformation(null, null, null, null);
         }
@@ -357,13 +358,14 @@ public class PostService {
                 posts.forEach(post -> {
                     //neu privacy la == 0 (public) thi se duoc hien thi voi nhung nguoi theo doi
                     //2 nguoi trong cung nhom moi nhin thay bai dang cau nhau o trang home
-                    if(post.getPrivacy() == 0 ){
+                    if (post.getPrivacy() == 0) {
                         Group group = groupService.findById(post.getIdGroup());
-                        if(group != null && checkExistsInGroup(post.getUserId(),userAccountService.getUID(),group.getId())){
+                        if (group != null && checkExistsInGroup(post.getUserId(), userAccountService.getUID(), group.getId())) {
                             postInformations.add(new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group));
-                        } else if(group != null && !checkExistsInGroup(post.getUserId(),userAccountService.getUID(),group.getId())){
+                        } else if (group != null && !checkExistsInGroup(post.getUserId(), userAccountService.getUID(), group.getId())) {
 
-                        }else postInformations.add(new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group));
+                        } else
+                            postInformations.add(new PostInformation(post, userAccountSetting, likeService.getListUserLikedPost(post.getId()), group));
 
                     }
                 });
@@ -374,17 +376,17 @@ public class PostService {
             } else if (postInformations.size() < size && page >= 1) {
                 return Collections.emptyList();
             } else return postInformations.subList(page * size, (page * size) + size);
-        }catch (Exception e){
+        } catch (Exception e) {
             return postInformations;
         }
     }
 
-    public boolean checkExistsInGroup(String u1,String u2,String g){
-        GroupMember g1 = groupMemberRepository.findByIdGroupAndIdUser(g,u1);
-        GroupMember g2 = groupMemberRepository.findByIdGroupAndIdUser(g,u2);
-        if(g1 != null && g2 != null && g1.getStatus() == 1 && g2.getStatus() == 1){
+    public boolean checkExistsInGroup(String u1, String u2, String g) {
+        GroupMember g1 = groupMemberRepository.findByIdGroupAndIdUser(g, u1);
+        GroupMember g2 = groupMemberRepository.findByIdGroupAndIdUser(g, u2);
+        if (g1 != null && g2 != null && g1.getStatus() == 1 && g2.getStatus() == 1) {
             return true;
-        }else return false;
+        } else return false;
     }
 
     public String like(String uId, String pId) {
@@ -397,7 +399,7 @@ public class PostService {
             postRepository.save(post);
             //Thêm vào activity
             if (!uId.equals(post.getUserId())) {
-                activityService.insert(new Activity(userAccountService.getUID(), post.getUserId(), post.getId(), "like", 0, System.currentTimeMillis()),userAccountService.getUID());
+                activityService.insert(new Activity(userAccountService.getUID(), post.getUserId(), post.getId(), "like", 0, System.currentTimeMillis()), userAccountService.getUID());
             }
             return SUCCESS;
         } else {
@@ -415,7 +417,7 @@ public class PostService {
             //xoá khỏi activity
             if (!uId.equals(post.getUserId())) {
                 Activity activity = activityService.findActivityByIdCurrentUserAndIdInteractUserAndTypeActivityAndIdPost(userAccountService.getUID(), post.getUserId(), "like", post.getId());
-                activityService.delete(activity,userAccountService.getUID());
+                activityService.delete(activity, userAccountService.getUID());
             }
             return SUCCESS;
         } else {
@@ -429,8 +431,8 @@ public class PostService {
             post.setLikes(Collections.emptyList());
             post.setUserId(userAccountService.getUID());
             post.setIsBlock(0);
-            if(post.getIdGroup() == null) post.setIdGroup("");
-            if(post.getVideoPath() == null) post.setVideoPath("");
+            if (post.getIdGroup() == null) post.setIdGroup("");
+            if (post.getVideoPath() == null) post.setVideoPath("");
             if (post.getUserId() == "" || post.getUserId() == null) {
                 return FAIL;
             } else {
@@ -444,18 +446,30 @@ public class PostService {
         }
     }
 
+    public String changePrivacy(Post post) {
+        try {
+            Post p = postRepository.findPostById(post.getId());
+            if (p != null && post.getUserId().equals(userAccountService.getUID())) {
+                postRepository.save(post);
+                return SUCCESS;
+            } else return FAIL;
+        } catch (Exception e) {
+            return FAIL;
+        }
+    }
+
     public String deletePost(String pId) {
         try {
             Post post = postRepository.findPostById(pId);
             GroupMember groupMember = new GroupMember();
             boolean isAdmin = false;
-            if(post != null){
+            if (post != null) {
                 //admin group xoa bai
-                groupMember = groupMemberRepository.findByIdGroupAndIdUser(post.getIdGroup(),userAccountService.getUID());
+                groupMember = groupMemberRepository.findByIdGroupAndIdUser(post.getIdGroup(), userAccountService.getUID());
                 isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
             }
 
-            if ((post != null && ( post.getUserId().equals(userAccountService.getUID()) || (groupMember != null && groupMember.getRole().equals("ADMIN")) || isAdmin ))) {
+            if ((post != null && (post.getUserId().equals(userAccountService.getUID()) || (groupMember != null && groupMember.getRole().equals("ADMIN")) || isAdmin))) {
                 //xoa trong story
                 storyRepository.deleteByIdPost(pId);
                 //xoa trong activity
@@ -517,7 +531,7 @@ public class PostService {
             Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
             UserAccount userAccount = userAccountService.findUserAccountByUsername(username);
             if (userAccount != null) {
-                List<Post> posts = postRepository.findPostByPrivacyAndUserId(1,userAccount.getId(), pageable);
+                List<Post> posts = postRepository.findPostByPrivacyAndUserId(1, userAccount.getId(), pageable);
                 posts.forEach(post -> {
                     List<String> stringListLike = likeService.getListUserLikedPost(post.getId());
                     int numberOfComments = commentService.findCommentByIdPost(post.getId()).size();
@@ -531,11 +545,11 @@ public class PostService {
     }
 
     //thuực hiện khoá 1 bài đăng (sau 30 ngày tự động xoá)
-    public String blockPost(String pId){
+    public String blockPost(String pId) {
         try {
             Post post = postRepository.findPostById(pId);
             //chuyển link ảnh(video) sang bảng BlockPost để có thể khôi phục lại
-            BlockPost blockPost = new BlockPost(pId,post.getImagePath(),post.getVideoPath(),System.currentTimeMillis());
+            BlockPost blockPost = new BlockPost(pId, post.getImagePath(), post.getVideoPath(), System.currentTimeMillis());
             blockPostRepository.insert(blockPost);
             //xoá link video, thay đổi link ảnh
             post.setImagePath("https://res.cloudinary.com/dinhpv/image/upload/v1644923908/instargram-clone/eyes-dont-see_z5xppf.jpg");
@@ -543,12 +557,12 @@ public class PostService {
             post.setIsBlock(1);
             postRepository.save(post);
             return SUCCESS;
-        }catch (Exception e){
+        } catch (Exception e) {
             return FAIL;
         }
     }
 
-    public String unBlockPost(String pId){
+    public String unBlockPost(String pId) {
         try {
             BlockPost blockPost = blockPostRepository.findByPostId(pId);
             Post post = postRepository.findPostById(pId);
@@ -560,21 +574,21 @@ public class PostService {
             //
             blockPostRepository.delete(blockPost);
             return SUCCESS;
-        }catch (Exception e){
+        } catch (Exception e) {
             return FAIL;
         }
     }
 
-    public BlockPost getPostBlock(String pId){
+    public BlockPost getPostBlock(String pId) {
         BlockPost blockPost = new BlockPost();
         try {
             return blockPostRepository.findByPostId(pId);
-        }catch (Exception e){
+        } catch (Exception e) {
             return blockPost;
         }
     }
 
-    public Post findPostByLikes(String id){
+    public Post findPostByLikes(String id) {
         return postRepository.findPostByLikes(id);
     }
 }
