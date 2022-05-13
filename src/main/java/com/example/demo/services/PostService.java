@@ -437,7 +437,7 @@ public class PostService {
                 return FAIL;
             } else {
                 postRepository.insert(post);
-                updatePostQuantity();
+                updatePostQuantity(post.getUserId());
                 return SUCCESS;
             }
         } catch (Exception e) {
@@ -480,18 +480,19 @@ public class PostService {
                 likeRepository.deleteByIdPost(pId);
                 //xoa trong save post
                 savedPostRepository.deleteByPostId(pId);
-                //xoa trong comment
-                commentRepository.deleteByIdPost(pId);
                 //xoa trong likeComment
                 commentRepository.findCommentByIdPost(pId).forEach(comment -> {
                     likeCommentRepository.deleteByIdComment(comment.getId());
                 });
+
+                //xoa trong comment
+                commentRepository.deleteByIdPost(pId);
                 //xoa trongh replyComment
                 replyCommentRepository.deleteAllByIdPost(pId);
 
                 //xoa bai dang
                 postRepository.delete(post);
-                updatePostQuantity();
+                updatePostQuantity(post.getUserId());
                 return SUCCESS;
             } else return FAIL;
         } catch (Exception e) {
@@ -499,10 +500,10 @@ public class PostService {
         }
     }
 
-    public void updatePostQuantity() {
+    public void updatePostQuantity(String idUser) {
         //Cập nhật lại số lượng bài đăng khi thêm hoặc xoá
-        UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(userAccountService.getUID());
-        userAccountSetting.setPosts(postRepository.findPostByUserId(userAccountService.getUID()).size());
+        UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(idUser);
+        userAccountSetting.setPosts(postRepository.findPostByUserId(idUser).size());
         userAccountSettingRepository.save(userAccountSetting);
     }
 

@@ -4,9 +4,10 @@ import com.example.demo.models.Like;
 import com.example.demo.models.activity.Activity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface LikeRepository extends MongoRepository<Like,String> {
     List<Like> findLikeByIdPost(String idPost);
     Like findLikeByIdUserAndIdPost(String idUser,String idPost);

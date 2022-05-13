@@ -6,10 +6,11 @@ import com.example.demo.models.UserAccountSetting;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.stream.Stream;
-
+@Repository
 public interface UserAccountRepository extends MongoRepository<UserAccount,String> {
     UserAccount findUserAccountByUsernameOrEmailOrPhoneNumberOrId(String username,String email,String phoneNumber,String Id);
     UserAccount findUserAccountByUsername(String username);
