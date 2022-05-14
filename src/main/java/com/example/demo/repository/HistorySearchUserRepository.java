@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface HistorySearchUserRepository extends MongoRepository<HistorySearchUser,String> {
     List<HistorySearchUser> findHistorySearchUserByIdUser(String idUser);
+    HistorySearchUser findHistorySearchUserByIdUserAndIdSearch(String idUser,String idSearch);
     void deleteByIdUser(String idUser);
 }

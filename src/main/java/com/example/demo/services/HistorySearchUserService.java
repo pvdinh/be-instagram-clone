@@ -25,59 +25,52 @@ public class HistorySearchUserService {
     private final String FAIL = "fail";
 
     // kết quả trả về là 1 list User result
-    public List<HistorySearchUserResult> findAll(){
+    public List<HistorySearchUserResult> findAll() {
         List<HistorySearchUserResult> historySearchUserResults = new ArrayList<>();
         List<HistorySearchUser> historySearchUsers = historySearchUserRepository.findHistorySearchUserByIdUser(userAccountService.getUID());
         // Sắp xếp giảm dần theo thời gian tìm kiếm
         historySearchUsers.sort(new Comparator<HistorySearchUser>() {
             @Override
             public int compare(HistorySearchUser o1, HistorySearchUser o2) {
-                return Long.compare(o2.getDateSearch(),o1.getDateSearch());
+                return Long.compare(o2.getDateSearch(), o1.getDateSearch());
             }
         });
 
-        // lấy duy nhất 1 kết quả đối với mỗi 1 user ( mới nhất)
+        //convert to HistorySearchUserResult
         historySearchUsers.forEach(historySearchUser -> {
             UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(historySearchUser.getIdSearch());
-            if(!checkExists(historySearchUserResults,userAccountSetting)){
-                historySearchUserResults.add(new HistorySearchUserResult(historySearchUser.getDateSearch(),userAccountSetting));
-            }
+            historySearchUserResults.add(new HistorySearchUserResult(historySearchUser.getDateSearch(), userAccountSetting));
         });
         return historySearchUserResults;
     }
 
-    public boolean checkExists(List<HistorySearchUserResult> historySearchUserResults,UserAccountSetting userAccountSetting){
-        for(int i=0;i<historySearchUserResults.size();i++){
-            if(userAccountSetting.getId().equalsIgnoreCase(historySearchUserResults.get(i).getUserAccountSetting().getId())){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public String insert(HistorySearchUser historySearchUser){
+    public String insert(HistorySearchUser historySearchUser) {
         try {
-            historySearchUserRepository.insert(historySearchUser);
+            HistorySearchUser hs = historySearchUserRepository.findHistorySearchUserByIdUserAndIdSearch(historySearchUser.getIdUser(), historySearchUser.getIdSearch());
+            if (hs != null) {
+                hs.setDateSearch(System.currentTimeMillis());
+                historySearchUserRepository.save(hs);
+            } else historySearchUserRepository.insert(historySearchUser);
             return SUCCESS;
-        }catch (Exception e){
+        } catch (Exception e) {
             return FAIL;
         }
     }
 
-    public String remove(HistorySearchUser historySearchUser){
+    public String remove(HistorySearchUser historySearchUser) {
         try {
             historySearchUserRepository.delete(historySearchUser);
             return SUCCESS;
-        }catch (Exception e){
+        } catch (Exception e) {
             return FAIL;
         }
     }
 
-    public String deleteByIdUser(String idUser){
+    public String deleteByIdUser(String idUser) {
         try {
             historySearchUserRepository.deleteByIdUser(idUser);
             return SUCCESS;
-        }catch (Exception e){
+        } catch (Exception e) {
             return FAIL;
         }
     }
