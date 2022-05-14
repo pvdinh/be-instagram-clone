@@ -16,20 +16,29 @@ public class HistorySearchUserController {
     private HistorySearchUserService historySearchUserService;
 
     @GetMapping
-    public BaseResponse findAll(){
+    public BaseResponse findAll() {
         try {
-            return new ResponseData(HttpStatus.OK.value(),historySearchUserService.findAll());
-        }catch (Exception e){
-            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+            return new ResponseData(HttpStatus.OK.value(), historySearchUserService.findAll());
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "fail");
         }
     }
 
     @PostMapping
-    public BaseResponse insert(@RequestBody HistorySearchUser historySearchUser){
+    public BaseResponse insert(@RequestBody HistorySearchUser historySearchUser) {
         try {
-            return new ResponseMessage(HttpStatus.OK.value(),historySearchUserService.insert(historySearchUser));
-        }catch (Exception e){
-            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(),"fail");
+            return new ResponseMessage(HttpStatus.OK.value(), historySearchUserService.insert(historySearchUser));
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "fail");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public BaseResponse delete(@PathVariable(name = "id") String id) {
+        try {
+            return new ResponseMessage(HttpStatus.OK.value(), historySearchUserService.delete(id));
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "fail");
         }
     }
 }

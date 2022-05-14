@@ -3,24 +3,24 @@ package com.example.demo.models.SearchInLayout;
 import com.example.demo.models.UserAccountSetting;
 
 public class HistorySearchUserResult {
-    private long dateSearch;
+    private HistorySearchUser historySearchUser;
     private UserAccountSetting userAccountSetting;
 
     public HistorySearchUserResult() {
         super();
     }
 
-    public HistorySearchUserResult(long dateSearch, UserAccountSetting userAccountSetting) {
-        this.dateSearch = dateSearch;
+    public HistorySearchUserResult(HistorySearchUser historySearchUser, UserAccountSetting userAccountSetting) {
+        this.historySearchUser = historySearchUser;
         this.userAccountSetting = userAccountSetting;
     }
 
-    public long getDateSearch() {
-        return dateSearch;
+    public HistorySearchUser getHistorySearchUser() {
+        return historySearchUser;
     }
 
-    public void setDateSearch(long dateSearch) {
-        this.dateSearch = dateSearch;
+    public void setHistorySearchUser(HistorySearchUser historySearchUser) {
+        this.historySearchUser = historySearchUser;
     }
 
     public UserAccountSetting getUserAccountSetting() {
@@ -30,5 +30,4 @@ public class HistorySearchUserResult {
     public void setUserAccountSetting(UserAccountSetting userAccountSetting) {
         this.userAccountSetting = userAccountSetting;
     }
-
 }

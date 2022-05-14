@@ -39,7 +39,7 @@ public class HistorySearchUserService {
         //convert to HistorySearchUserResult
         historySearchUsers.forEach(historySearchUser -> {
             UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(historySearchUser.getIdSearch());
-            historySearchUserResults.add(new HistorySearchUserResult(historySearchUser.getDateSearch(), userAccountSetting));
+            historySearchUserResults.add(new HistorySearchUserResult(historySearchUser, userAccountSetting));
         });
         return historySearchUserResults;
     }
@@ -57,9 +57,9 @@ public class HistorySearchUserService {
         }
     }
 
-    public String remove(HistorySearchUser historySearchUser) {
+    public String delete(String id) {
         try {
-            historySearchUserRepository.delete(historySearchUser);
+            historySearchUserRepository.deleteById(id);
             return SUCCESS;
         } catch (Exception e) {
             return FAIL;
