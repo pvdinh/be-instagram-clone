@@ -105,7 +105,7 @@ public class GroupService {
                 List<Post> posts = postRepository.findPostByIdGroup(groupMember.getIdGroup());
                 posts.forEach(post -> {
                     postInformations.add(new PostInformation(post,
-                            userAccountSettingRepository.findUserAccountSettingById(groupMember.getIdUser()),
+                            userAccountSettingRepository.findUserAccountSettingById(post.getUserId()),
                             likeService.getListUserLikedPost(post.getId()), groupRepository.findById(post.getIdGroup()).orElse(null)));
                 });
             });
