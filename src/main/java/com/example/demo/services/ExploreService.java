@@ -28,8 +28,10 @@ public class ExploreService {
             Pageable pageable = PageRequest.of(page,size);
             Page<Post> postPage = postRepository.findAll(pageable);
             postPage.getContent().forEach(post -> {
-                List<Comment> comments = commentRepository.findCommentByIdPost(post.getId());
-                postDetails.add(new PostDetail(post,comments.size(), Collections.emptyList())); 
+                if(post.getPrivacy() == 0){
+                    List<Comment> comments = commentRepository.findCommentByIdPost(post.getId());
+                    postDetails.add(new PostDetail(post,comments.size(), Collections.emptyList()));
+                }
             });
             return postDetails;
         }catch (Exception e){
