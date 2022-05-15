@@ -17,6 +17,7 @@ import com.mongodb.client.model.Sorts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -60,6 +61,26 @@ public class GroupService {
         }
     }
 
+    public String update(Group group) {
+        try {
+            Group gr = groupRepository.findById(group.getId()).orElse(null);
+            if (gr != null) {
+                GroupMember groupMember = groupMemberRepository.findByIdGroupAndIdUser(group.getId(), userAccountService.getUID());
+                if (groupMember != null && groupMember.getRole().equals("ADMIN")) {
+                    groupRepository.save(group);
+                    LOGGER.info("update success.");
+                    return SUCCESS;
+                } else return FAIL;
+            } else {
+                LOGGER.info("update fail cause: null");
+                return FAIL;
+            }
+        } catch (Exception e) {
+            LOGGER.info("update fail cause:", e.getCause());
+            return FAIL;
+        }
+    }
+
     public Group findById(String idGroup) {
         return groupRepository.findById(idGroup).orElse(null);
     }
@@ -68,7 +89,7 @@ public class GroupService {
         List<Group> groups = new ArrayList<>();
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
-            List<GroupMember> groupMembers = groupMemberRepository.findByRoleAndIdUserAndStatus(role, userAccountService.getUID(),1, pageable);
+            List<GroupMember> groupMembers = groupMemberRepository.findByRoleAndIdUserAndStatus(role, userAccountService.getUID(), 1, pageable);
             groupMembers.forEach(groupMember -> {
                 groups.add(groupRepository.findById(groupMember.getIdGroup()).orElse(new Group()));
             });
@@ -80,7 +101,7 @@ public class GroupService {
         }
     }
 
-    public List<Group> findByRoleAndIdUser(String role,String idUser) {
+    public List<Group> findByRoleAndIdUser(String role, String idUser) {
         List<Group> groups = new ArrayList<>();
         try {
             List<GroupMember> groupMembers = groupMemberRepository.findByRoleAndIdUser(role, idUser);
@@ -110,12 +131,15 @@ public class GroupService {
                 });
             });
             postInformations.sort(new SortClassCustom.PostByDateCreate());
-            LOGGER.info("get success.");
-            if (postInformations.size() < size && page < 1) {
-                return postInformations.subList(0, postInformations.size());
-            } else if (postInformations.size() < size && page >= 1) {
-                return Collections.emptyList();
-            } else return postInformations.subList(page * size, (page * size) + size);
+            if((page * size) > postInformations.size()){
+                return Collections.EMPTY_LIST;
+            }else {
+                PagedListHolder pageable = new PagedListHolder(postInformations);
+                pageable.setPageSize(size);
+                pageable.setPage(page);
+                LOGGER.info("get success.");
+                return pageable.getPageList();
+            }
         } catch (Exception e) {
             LOGGER.info("get fail cause:", e.getCause());
             return postInformations;
@@ -126,8 +150,8 @@ public class GroupService {
         List<PostInformation> postInformations = new ArrayList<>();
         try {
             //lay ra cac bai dang tu 1 nhom
-            Pageable pageable = PageRequest.of(page,size, Sort.by("dateCreated").descending());
-            List<Post> posts = postRepository.findPostByIdGroup(idGroup,pageable);
+            Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+            List<Post> posts = postRepository.findPostByIdGroup(idGroup, pageable);
             posts.forEach(post -> {
                 postInformations.add(new PostInformation(post,
                         userAccountSettingRepository.findUserAccountSettingById(post.getUserId()),
@@ -143,50 +167,49 @@ public class GroupService {
 
     public List<Group> findByNameContain(String name) {
         List<Group> groups = new ArrayList<>();
-        try
-        {
+        try {
             Pageable pageable = PageRequest.of(0, 20);
             groups = groupRepository.findByNameContains(name, pageable);
             LOGGER.info("get success.");
             return groups;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.info("get fail cause:", e.getCause());
             return groups;
         }
     }
 
-    public List<MemberInGroup> getMemberInGroup(String idGroup,int status,int page,int size) {
+    public List<MemberInGroup> getMemberInGroup(String idGroup, int status, int page, int size) {
         List<MemberInGroup> memberInGroups = new ArrayList<>();
         try {
-            Pageable pageable = PageRequest.of(page,size,Sort.by("dateCreated").descending());
-            groupMemberRepository.findByIdGroupAndStatus(idGroup,status,pageable).forEach(groupMember -> {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+            groupMemberRepository.findByIdGroupAndStatus(idGroup, status, pageable).forEach(groupMember -> {
                 UserAccountSetting userAccountSetting = userAccountSettingRepository.findUserAccountSettingById(groupMember.getIdUser());
                 UserAccountSetting userInvite = userAccountSettingRepository.findUserAccountSettingById(groupMember.getIdUserInvite());
-                memberInGroups.add(new MemberInGroup(groupMember,userAccountSetting,userInvite));
+                memberInGroups.add(new MemberInGroup(groupMember, userAccountSetting, userInvite));
             });
             LOGGER.info("get success member: {}", memberInGroups.size());
             return memberInGroups;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("get member fail: {}", e.getCause());
             return memberInGroups;
         }
     }
 
-    public List<MemberInGroup> searchMemberInGroup(String search,String idGroup,int status,int page,int size) {
+    public List<MemberInGroup> searchMemberInGroup(String search, String idGroup, int status, int page, int size) {
         List<MemberInGroup> memberInGroups = new ArrayList<>();
         try {
-            Pageable pageable = PageRequest.of(page,size,Sort.by("dateCreated").descending());
+            Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
             List<UserAccountSetting> userAccountSettings = userAccountSettingRepository.findUserAccountSettingsByUsernameContains(search);
             userAccountSettings.forEach(userAccountSetting -> {
-                GroupMember groupMember = groupMemberRepository.findByIdGroupAndIdUserAndStatus(idGroup,userAccountSetting.getId(),status);
-                if(groupMember != null){
+                GroupMember groupMember = groupMemberRepository.findByIdGroupAndIdUserAndStatus(idGroup, userAccountSetting.getId(), status);
+                if (groupMember != null) {
                     UserAccountSetting userInvite = userAccountSettingRepository.findUserAccountSettingById(groupMember.getIdUserInvite());
-                    memberInGroups.add(new MemberInGroup(groupMember,userAccountSetting,userInvite));
+                    memberInGroups.add(new MemberInGroup(groupMember, userAccountSetting, userInvite));
                 }
             });
             LOGGER.info("search success member: {}", memberInGroups.size());
             return memberInGroups;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("search member fail: {}", e.getCause());
             return memberInGroups;
         }
@@ -222,6 +245,7 @@ public class GroupService {
             return FAIL;
         }
     }
+
     public String requestJoinGroup(String idGroup) {
         try {
             GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(idGroup, userAccountService.getUID());
@@ -250,7 +274,7 @@ public class GroupService {
         try {
             GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), groupMember.getIdUser());
             GroupMember checkRole = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), userAccountService.getUID());
-            if (gmc != null && checkRole.getRole().equals("ADMIN") ) {
+            if (gmc != null && checkRole.getRole().equals("ADMIN")) {
 
                 //
                 gmc.setStatus(1);
@@ -277,7 +301,7 @@ public class GroupService {
         try {
             GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), groupMember.getIdUser());
             GroupMember checkRole = groupMemberRepository.findByIdGroupAndIdUser(groupMember.getIdGroup(), userAccountService.getUID());
-            if (gmc != null && checkRole.getRole().equals("ADMIN") ) {
+            if (gmc != null && checkRole.getRole().equals("ADMIN")) {
                 //
                 gmc.setStatus(1);
                 groupMemberRepository.delete(gmc);
@@ -307,13 +331,13 @@ public class GroupService {
         }
     }
 
-    public String rejectRequestJoinGroup(String idGroup,String idUser) {
+    public String rejectRequestJoinGroup(String idGroup, String idUser) {
         try {
             GroupMember gmc = groupMemberRepository.findByIdGroupAndIdUser(idGroup, idUser);
             if (gmc != null && !gmc.getRole().equals("ADMIN")) {
                 //
                 groupMemberRepository.delete(gmc);
-                if(gmc.getStatus() == 1){
+                if (gmc.getStatus() == 1) {
                     //update number membership when delete
                     Group group = groupRepository.findById(idGroup).orElse(null);
                     group.setNumberMembership(groupMemberRepository.findByIdGroup(idGroup).size());
@@ -374,7 +398,7 @@ public class GroupService {
         }
     }
 
-    void deleteById(String idGroup){
+    void deleteById(String idGroup) {
         groupRepository.deleteById(idGroup);
     }
 }

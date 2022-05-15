@@ -12,6 +12,8 @@ import com.example.demo.utils.SortClassCustom;
 import javafx.geometry.Pos;
 import org.omg.PortableServer.POA;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -294,13 +296,14 @@ public class PostService {
                 postDetails.add(new PostDetail(post, comments.size(), Collections.emptyList()));
             });
             postDetails.sort(new SortClassCustom.PostByPopular());
-            if (postDetails.size() <= size && page < 1) {
-                return postDetails;
-            } else if (postDetails.size() < size && page >= 1) {
-                return Collections.emptyList();
-            } else if (postDetails.size() < ((page * size) + size)) {
-                return postDetails.subList(page * size, postDetails.size());
-            } else return postDetails.subList(page * size, (page * size) + size);
+            if((page * size) > postDetails.size()){
+                return Collections.EMPTY_LIST;
+            }else {
+                PagedListHolder pageable = new PagedListHolder(postDetails);
+                pageable.setPageSize(size);
+                pageable.setPage(page);
+                return pageable.getPageList();
+            }
         } catch (Exception e) {
             return postDetails;
         }
@@ -371,11 +374,14 @@ public class PostService {
                 });
             });
             postInformations.sort(new SortClassCustom.PostByDateCreate());
-            if (postInformations.size() < size && page < 1) {
-                return postInformations.subList(0, postInformations.size());
-            } else if (postInformations.size() < size && page >= 1) {
-                return Collections.emptyList();
-            } else return postInformations.subList(page * size, (page * size) + size);
+            if((page * size) > postInformations.size()){
+                return Collections.EMPTY_LIST;
+            }else {
+                PagedListHolder pageable = new PagedListHolder(postInformations);
+                pageable.setPageSize(size);
+                pageable.setPage(page);
+                return pageable.getPageList();
+            }
         } catch (Exception e) {
             return postInformations;
         }

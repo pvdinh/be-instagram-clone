@@ -9,6 +9,7 @@ import com.example.demo.repository.FollowRepository;
 import com.example.demo.repository.MessageRepository;
 import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -68,13 +69,14 @@ public class MessageService {
         messages.addAll(messageRepository.findMessagesBySenderAndReceiver(userAccountService.getUID(),receiver));
         Collections.sort(messages);
         UserAccountSetting userAccountSettingReceiver = userAccountSettingService.findUserAccountSettingById(receiver);
-        if (messages.size() <= size && page < 1) {
-            return new MessageInformation(userAccountSettingReceiver,messages);
-        } else if (messages.size() < size && page >= 1) {
+        if((page * size) > messages.size()){
             return new MessageInformation(userAccountSettingReceiver,Collections.EMPTY_LIST);
-        }else if (messages.size() < ((page * size) + size)) {
-            return new MessageInformation(userAccountSettingReceiver,messages.subList(page * size, messages.size()));
-        } else return new MessageInformation(userAccountSettingReceiver,messages.subList(page * size, (page * size) + size));
+        }else {
+            PagedListHolder pageable = new PagedListHolder(messages);
+            pageable.setPageSize(size);
+            pageable.setPage(page);
+            return new MessageInformation(userAccountSettingReceiver,pageable.getPageList());
+        }
     }
 
     public String postMessage(Message message){

@@ -30,6 +30,15 @@ public class GroupController {
         }
     }
 
+    @PutMapping
+    public BaseResponse updateGroup(@RequestBody Group group) {
+        try {
+            return new ResponseObject(HttpStatus.OK.value(), groupService.update(group));
+        } catch (Exception e) {
+            return new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "fail");
+        }
+    }
+
     @GetMapping("/{name}/search")
     public BaseResponse findByNameContain(@PathVariable(name = "name") String name) {
         try {
