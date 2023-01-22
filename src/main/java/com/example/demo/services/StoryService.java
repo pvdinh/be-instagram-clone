@@ -1,14 +1,12 @@
 package com.example.demo.services;
 
 import com.example.demo.models.Follow;
-import com.example.demo.models.Post;
 import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.home.Story;
 import com.example.demo.models.profile.PostDetail;
 import com.example.demo.models.profile.Profile;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.StoryRepository;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
