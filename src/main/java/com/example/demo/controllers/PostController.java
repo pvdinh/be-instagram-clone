@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.helper.RedisHelper;
 import com.example.demo.models.Post;
 import com.example.demo.response.BaseResponse;
 import com.example.demo.response.ResponseData;
@@ -10,6 +11,7 @@ import com.example.demo.services.PostService;
 import com.example.demo.services.SavedPostService;
 import com.example.demo.services.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,9 @@ public class PostController {
     @Autowired
     private SavedPostService savedPostService;
 
+    @Autowired
+    private RedisHelper redisHelper;
+
     @GetMapping
     public BaseResponse findAllPost() {
         try {
@@ -47,7 +52,7 @@ public class PostController {
         }
     }
 
-    @PostMapping("/following")
+    @PostMapping("/fololwing")
     public BaseResponse findAllPostByListUserId(@RequestBody Map<String, List<String>> listUserId) {
         try {
             return new ResponseData(HttpStatus.OK.value(), postService.findAllByListUserId(listUserId.get("following")));
