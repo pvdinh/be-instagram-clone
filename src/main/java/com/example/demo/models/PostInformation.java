@@ -1,11 +1,14 @@
 package com.example.demo.models;
 
+import com.example.demo.models.group.Group;
+
 import java.util.List;
 
 public class PostInformation {
     private Post post;
     private UserAccountSetting userAccountSetting;
     private List<String> likes;
+    private Group group;
 
     public PostInformation() {
         super();
@@ -15,6 +18,13 @@ public class PostInformation {
         this.post = post;
         this.userAccountSetting = userAccountSetting;
         this.likes = likes;
+    }
+
+    public PostInformation(Post post, UserAccountSetting userAccountSetting, List<String> likes, Group group) {
+        this.post = post;
+        this.userAccountSetting = userAccountSetting;
+        this.likes = likes;
+        this.group = group;
     }
 
     public Post getPost() {
@@ -39,5 +49,13 @@ public class PostInformation {
 
     public void setLikes(List<String> likes) {
         this.likes = likes;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

@@ -16,7 +16,7 @@ public class TokenProvider {
         CustomOauth2User customOauth2User = (CustomOauth2User) authentication.getPrincipal();
 
         return Jwts.builder()
-                .setSubject(customOauth2User.getId())
+                .setSubject(customOauth2User.getName())
                 .setExpiration(new Date(System.currentTimeMillis() + TokenAuthentication.EXPIRATIONTIME))
                 .signWith(SignatureAlgorithm.HS512, TokenAuthentication.SECRET)
                 .compact();

@@ -4,7 +4,7 @@ import com.example.demo.models.UserAccountSetting;
 
 import java.util.List;
 
-public class MessageInformation {
+public class MessageInformation implements Comparable<MessageInformation>{
     private UserAccountSetting userAccountSettingReceiver;
     private List<Message> messages;
 
@@ -31,5 +31,10 @@ public class MessageInformation {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    @Override
+    public int compareTo(MessageInformation o) {
+        return Long.compare(o.messages.get(o.messages.size()-1).getDateSendMessage(),this.messages.get(this.messages.size()-1).getDateSendMessage());
     }
 }

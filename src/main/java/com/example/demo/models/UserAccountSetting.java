@@ -11,19 +11,20 @@ public class UserAccountSetting {
     @Indexed(unique = true)
     private String displayName;
     private String description;
-    private String followers;
-    private String following;
-    private String posts;
+    private int followers;
+    private int following;
+    private int posts;
     private String profilePhoto;
     @Indexed(unique = true)
     private String username;
     private String website;
+    private long dateCreated;
 
     public UserAccountSetting() {
         super();
     }
 
-    public UserAccountSetting(String id, String displayName, String description, String followers, String following, String posts, String profilePhoto, String username, String website) {
+    public UserAccountSetting(String id, String displayName, String description, int followers, int following, int posts, String profilePhoto, String username, String website, long dateCreated) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
@@ -33,6 +34,7 @@ public class UserAccountSetting {
         this.profilePhoto = profilePhoto;
         this.username = username.replace(" ", "_");
         this.website = website;
+        this.dateCreated = dateCreated;
     }
 
     public String getId() {
@@ -59,27 +61,27 @@ public class UserAccountSetting {
         this.description = description;
     }
 
-    public String getFollowers() {
+    public int getFollowers() {
         return followers;
     }
 
-    public void setFollowers(String followers) {
+    public void setFollowers(int followers) {
         this.followers = followers;
     }
 
-    public String getFollowing() {
+    public int getFollowing() {
         return following;
     }
 
-    public void setFollowing(String following) {
+    public void setFollowing(int following) {
         this.following = following;
     }
 
-    public String getPosts() {
+    public int getPosts() {
         return posts;
     }
 
-    public void setPosts(String posts) {
+    public void setPosts(int posts) {
         this.posts = posts;
     }
 
@@ -107,7 +109,17 @@ public class UserAccountSetting {
         this.website = website;
     }
 
+    public long getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(long dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
     @Override
+    //để thực hiện các thao tác trên List cần so sánh như removeAll
+    //VD: trong FollowingService.suggestionsToFollow
     public boolean equals(Object obj) {
         if(obj == this){
             return true;

@@ -1,16 +1,16 @@
 package com.example.demo.services;
 
+import com.example.demo.models.Follow;
+import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.message.Message;
 import com.example.demo.models.message.MessageInformation;
+import com.example.demo.repository.FollowRepository;
 import com.example.demo.repository.MessageRepository;
-import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MessageService {
@@ -20,6 +20,8 @@ public class MessageService {
     private UserAccountService userAccountService;
     @Autowired
     private UserAccountSettingService userAccountSettingService;
+    @Autowired
+    private FollowRepository followRepository;
 
     private final String SUCCESS = "success";
     private final String FAIL = "fail";
@@ -28,11 +30,20 @@ public class MessageService {
         return messageRepository.findAll();
     }
 
+    //lấy ra danh sách các người nhận hoặc gửi
     public List<String> listReceiver(){
         List<String> listReceiver=new ArrayList<>();
+        //danh sách người gửi đã được phản hồi
         messageRepository.findMessagesBySender(userAccountService.getUID()).forEach(message -> {
             if(!listReceiver.contains(message.getReceiver())){
                 listReceiver.add(message.getReceiver());
+            }
+        });
+        //khi người nhận chưa phản hồi người gửi
+        //nếu thiếu, chỉ hiện thị danh sách mà người nhận đã trả lời
+        messageRepository.findMessagesByReceiver(userAccountService.getUID()).forEach(message -> {
+            if(!listReceiver.contains(message.getSender())){
+                listReceiver.add(message.getSender());
             }
         });
         return listReceiver;
@@ -45,16 +56,25 @@ public class MessageService {
             messages.addAll(messageRepository.findMessagesBySenderAndReceiver(userAccountService.getUID(),s));
             Collections.sort(messages);
             messageInformations.add(new MessageInformation(userAccountSettingService.findUserAccountSettingById(s)
-                    ,messages));
+                    ,messages.size() > 10 ? messages.subList(messages.size()-10,messages.size()) : messages));
         });
+        Collections.sort(messageInformations);
         return messageInformations;
     }
 
-    public MessageInformation findAllMessageBySenderAndReceiver(String receiver){
+    public MessageInformation findAllMessageBySenderAndReceiver(String receiver,int page,int size){
         List<Message> messages = messageRepository.findMessagesBySenderAndReceiver(receiver,userAccountService.getUID());
         messages.addAll(messageRepository.findMessagesBySenderAndReceiver(userAccountService.getUID(),receiver));
         Collections.sort(messages);
-        return new MessageInformation(userAccountSettingService.findUserAccountSettingById(receiver),messages);
+        UserAccountSetting userAccountSettingReceiver = userAccountSettingService.findUserAccountSettingById(receiver);
+        if((page * size) > messages.size()){
+            return new MessageInformation(userAccountSettingReceiver,Collections.EMPTY_LIST);
+        }else {
+            PagedListHolder pageable = new PagedListHolder(messages);
+            pageable.setPageSize(size);
+            pageable.setPage(page);
+            return new MessageInformation(userAccountSettingReceiver,pageable.getPageList());
+        }
     }
 
     public String postMessage(Message message){
@@ -67,4 +87,31 @@ public class MessageService {
             return FAIL;
         }
     }
+
+    public List<UserAccountSetting> findReceiverByUsername(String search){
+        List<UserAccountSetting> userAccountSettings = new ArrayList<>();
+        List<Follow> follows =followRepository.findFollowByUserCurrent(userAccountService.getUID());
+        follows.forEach(follow -> {
+            UserAccountSetting userAccountSetting = userAccountSettingService.findUserAccountSettingById(follow.getUserFollowing());
+            if(userAccountSetting.getUsername().contains(search)){
+                userAccountSettings.add(userAccountSetting);
+            }
+        });
+        if(userAccountSettings.size() < 50){
+            userAccountSettingService.findUserAccountSettingsByUsernameContains(search).forEach(userAccountSetting -> {
+                if(!userAccountSettings.contains(userAccountSetting)){
+                    userAccountSettings.add(userAccountSetting);
+                }
+            });
+        }
+        return userAccountSettings.size() > 49 ? userAccountSettings.subList(0,50) : userAccountSettings;
+    }
+
+    public void deleteBySender(String idUSer){
+        messageRepository.deleteBySender(idUSer);
+    }
+    public void deleteByReceiver(String idUSer){
+        messageRepository.deleteByReceiver(idUSer);
+    }
+
 }
