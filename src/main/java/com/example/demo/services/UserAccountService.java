@@ -1,12 +1,10 @@
 package com.example.demo.services;
 
 import com.example.demo.models.UserAccount;
-import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.adminModels.UserAccountProfile;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.repository.UserAccountSettingRepository;
 import com.example.demo.utils.UsernameFromJWT;
-import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 

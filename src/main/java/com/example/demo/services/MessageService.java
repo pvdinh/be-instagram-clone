@@ -1,13 +1,11 @@
 package com.example.demo.services;
 
 import com.example.demo.models.Follow;
-import com.example.demo.models.UserAccount;
 import com.example.demo.models.UserAccountSetting;
 import com.example.demo.models.message.Message;
 import com.example.demo.models.message.MessageInformation;
 import com.example.demo.repository.FollowRepository;
 import com.example.demo.repository.MessageRepository;
-import org.omg.PortableInterceptor.SUCCESSFUL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
